@@ -1,7 +1,8 @@
 
 
-var m = [30, 10, 10, 10]; //margins
-
+var m = [30, 10, 10, 10], //margins
+	nQuantiles = 6; //number of quantiles
+	
 var x,
 	y = {},
 	xBar,
@@ -21,7 +22,7 @@ var line = d3.svg.line(),
 	tooltip_selected,
 	color;
 
-var pwds; // nested structure. The key is a word an the value is the collection (array)
+var pwds; // nested structure. The key is a word and the value is the collection (array)
 		  // of "rows" (associative array) corresponding to that word in the "TopPwdsPerWord.csv"
 
 window.addEventListener("load", start, false);
@@ -38,18 +39,36 @@ window.addEventListener("load", start, false);
 		
 		d3.csv("freqDiffByWord_AbsDiffScoreTop100.csv", function(cars) {
 		
-		  // Extract the list of dimensions and create a scale for each.
-		  x.domain(dimensions = d3.keys(cars[0]).filter(function(d) {
-		    return d != "Word" && (y[d] = d3.scale.linear()
-		         .domain(d3.extent(cars, function(p) { return +p[d]; }))
-   		         .range([h, 0]));
-		  }));
+			  // Extract the list of dimensions e sets the domain for the x-axis.
+			  x.domain(dimensions = d3.keys(cars[0]).filter(function(d) {
+			    return d != "Word"; }));
+			  
+			  // creates a quantile scale function for each dimension
+			  dimensions.forEach(function(d,i,a){
+				  var quantiles = {}, dThresholds = {};
+				  
+				  quantiles[d] = d3.scale.quantile()	// dimension's quantile function
+						.range(d3.range(1,nQuantiles+1))
+						.domain(cars.map(function(p){return +p[d];}));
+				  
+				  // build an array with all the thresholds
+				  dThresholds[d] = d3.extent(cars, function(p) { return +p[d]; }); // adding dimensions's extent
+				  for(var i=nQuantiles-2; i>=0; i--) // adding quantiles' thresholds in the middle of the extent's array
+					  dThresholds[d].splice(1,0,quantiles[d].quantiles()[i]); 
+					  
+				  var l = h/nQuantiles; // height of each quantile
+				  var range = dThresholds[d].map(function(p,i){return (nQuantiles-i)*l;});
+					  
+				  y[d] = d3.scale.linear().domain(dThresholds[d])
+					  			.range(range);
+			  });
+			  
 		  
-		d3.csv("top_pwds_per_word.csv", function(pwdsCsv){
-			pwds = d3.nest()
-					.key(function(d){return d["Word"];})
-					.map(pwdsCsv);
-		});
+			d3.csv("TopPwdsPerWord.csv", function(pwdsCsv){
+				pwds = d3.nest()
+						.key(function(d){return d["Word"];})
+						.map(pwdsCsv);
+			});
 		
 		  // Add the tooltips
 		  tooltips = d3.select("body")
@@ -80,7 +99,7 @@ window.addEventListener("load", start, false);
 		    .enter().append("svg:path")
 		      .attr("d", path)
 		      .on("mouseover", function(d) {
-	 		    	  tooltips.each(function (p,i){
+	 		    	 tooltips.each(function (p,i){
 	 		    		  d3.select(this)
 	 		    		  	.style("top", y[p](d[p])+"px")
 	 		    		  	.text(d[p]);
@@ -90,12 +109,12 @@ window.addEventListener("load", start, false);
 	 		    	  
 	 		    	 var word = d["Word"]; //highlighted word
 	 		    	 
-	 		    	  tooltip_pk.text(word)
+	 		    	 tooltip_pk.text(word)
 	 		    	  				.style("top", d3.event.clientY + 15 + "px")
 	 		    	  				.style("left", d3.event.clientX + 15 + "px")
 	 		    	  				.style("display", "block");
 	 		    	  
-	 		    	  if (!isSelected)
+	 		    	 if (!isSelected)
 	 		    		  updatePwdList(word, false);
 		      })
 		      .style("stroke", function(d){return color(d[dimensions[1]]);});
@@ -121,7 +140,6 @@ window.addEventListener("load", start, false);
 		  tooltip_pk = d3.select("body")
 		  					.append("div")
 		  					.attr("class","tooltip tooltip_pk");
-		  
 		  tooltip_selected = d3.select("body")
 								.append("div")
 								.attr("class","tooltip tooltip_selected")
@@ -136,10 +154,10 @@ window.addEventListener("load", start, false);
 		      .on("click", function(d){
 		    	  // if the user clicks the axis, it is inverted
 		    	  if (y[d].brush.empty()){
-						y[d].domain(d3.permute(y[d].domain(), [1,0]));
-						updateLines(1000);
-						tooltip_selected.transition().duration(1000).style("top", tpSelecTop);
-						g.selectAll("g.axis").each(function(p){if (p==d) d3.select(this).call(axis.scale(y[d])); });
+		    		  y[d].range(y[d].range().reverse());
+					  updateLines(1000);
+					  tooltip_selected.transition().duration(1000).style("top", tpSelecTop);
+					  g.selectAll("g.axis").each(function(p){if (p==d) d3.select(this).call(axis.scale(y[d])); });
 		    	  }
 		      })
 		      .call(d3.behavior.drag()
@@ -179,7 +197,7 @@ window.addEventListener("load", start, false);
 		  // Add an axis and title.
 		  g.append("svg:g")
 		      .attr("class", "axis")
-		      .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
+		      .each(function(d) { d3.select(this).call(axis.scale(y[d]).ticks(10)); })
 		    .append("svg:text")
 		      .attr("text-anchor", "middle")
 		      .attr("y", -9)
