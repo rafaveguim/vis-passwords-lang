@@ -65,8 +65,7 @@ window.addEventListener("load", start, false);
 				  
 				  // builds the diverging color mapping function based on a given dimension
 				  if (i==colorDimension)
-				  	color = d3.scale.linear().domain([dThresholds[d][0], 0, dThresholds[d].slice(-1)[0]])
-				  			.range(["red", "steelblue", "green"]);
+					  	color = function(x){return x<0 ? "rosybrown" : "steelblue";};
 				  
 			  });
 			  
