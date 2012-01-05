@@ -1,7 +1,8 @@
 
 
 var m = [30, 10, 10, 10], //margins
-	nQuantiles = 6; //number of quantiles
+	nQuantiles = 4; //number of quantiles
+	colorDimension = 0;
 	
 var x,
 	y = {},
@@ -45,7 +46,7 @@ window.addEventListener("load", start, false);
 			  
 			  // creates a quantile scale function for each dimension
 			  dimensions.forEach(function(d,i,a){
-				  var quantiles = {}, dThresholds = {};
+				  var quantiles = [], dThresholds = [];
 				  
 				  quantiles[d] = d3.scale.quantile()	// dimension's quantile function
 						.range(d3.range(1,nQuantiles+1))
@@ -53,18 +54,24 @@ window.addEventListener("load", start, false);
 				  
 				  // build an array with all the thresholds
 				  dThresholds[d] = d3.extent(cars, function(p) { return +p[d]; }); // adding dimensions's extent
-				  for(var i=nQuantiles-2; i>=0; i--) // adding quantiles' thresholds in the middle of the extent's array
-					  dThresholds[d].splice(1,0,quantiles[d].quantiles()[i]); 
+				  for(var j=nQuantiles-2; j>=0; j--) // adding quantiles' thresholds in the middle of the extent's array
+					  dThresholds[d].splice(1,0,quantiles[d].quantiles()[j]); 
 					  
 				  var l = h/nQuantiles; // height of each quantile
 				  var range = dThresholds[d].map(function(p,i){return (nQuantiles-i)*l;});
 					  
 				  y[d] = d3.scale.linear().domain(dThresholds[d])
 					  			.range(range);
+				  
+				  // builds the diverging color mapping function based on a given dimension
+				  if (i==colorDimension)
+				  	color = d3.scale.linear().domain([dThresholds[d][0], 0, dThresholds[d].slice(-1)[0]])
+				  			.range(["red", "steelblue", "springgreen"]);
+				  
 			  });
 			  
 		  
-			d3.csv("TopPwdsPerWord.csv", function(pwdsCsv){
+			d3.csv("top_pwds_per_word.csv", function(pwdsCsv){
 				pwds = d3.nest()
 						.key(function(d){return d["Word"];})
 						.map(pwdsCsv);
@@ -89,8 +96,6 @@ window.addEventListener("load", start, false);
 		    .enter().append("svg:path")
 		      .attr("d", path);
 		
-		  color = d3.scale.linear().domain(d3.extent(cars, function(p) { return +p[dimensions[1]]; })).range(["#4682B4", "#ADFF2F"]);
-		  
 		  // Add blue foreground lines for focus.
 		  foreground = svg.append("svg:g")
 		      .attr("class", "foreground")
@@ -117,7 +122,7 @@ window.addEventListener("load", start, false);
 	 		    	 if (!isSelected)
 	 		    		  updatePwdList(word, false);
 		      })
-		      .style("stroke", function(d){return color(d[dimensions[1]]);});
+		      .style("stroke", function(d){return color(d[dimensions[colorDimension]]);});
 
 		  highlight = svg.append("svg:path")
 							.attr("class", "highlight")
