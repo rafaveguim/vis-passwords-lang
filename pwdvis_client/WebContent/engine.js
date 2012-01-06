@@ -1,7 +1,7 @@
 
 
 var m = [30, 10, 10, 10], //margins
-	nQuantiles = 4; //number of quantiles
+	nQuantiles = 6; //number of quantiles
 	colorDimension = 0;
 	
 var x,
