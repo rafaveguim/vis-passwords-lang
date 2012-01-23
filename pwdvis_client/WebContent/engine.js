@@ -1,7 +1,7 @@
 
 
 var m = [30, 10, 10, 10], //margins
-	nQuantiles = 6; //number of quantiles
+	nQuantiles = 6, //number of quantiles
 	colorDimension = 0;
 	
 var x,
@@ -38,7 +38,7 @@ window.addEventListener("load", start, false);
 		  .append("svg:g")
 		  .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 		
-		d3.csv("freqDiffByWord_AbsDiffScoreTop100.csv", function(cars) {
+		d3.csv("word_measures_top.csv", function(cars) {
 		
 			  // Extract the list of dimensions e sets the domain for the x-axis.
 			  x.domain(dimensions = d3.keys(cars[0]).filter(function(d) {
@@ -70,97 +70,104 @@ window.addEventListener("load", start, false);
 			  });
 			  
 		  
-			d3.csv("top_pwds_per_word.csv", function(pwdsCsv){
-				pwds = d3.nest()
+			d3.csv("top_pwds_per_word.csv",	function(pwdsCsv){				
+						pwds = d3.nest()
 						.key(function(d){return d["Word"];})
 						.map(pwdsCsv);
-			});
+					});
 		
 		  // Add the tooltips
-		  tooltips = d3.select("body")
-	  		.selectAll("div.tooltip_value")
-	  		.data(dimensions)
-	  		.enter()
-	  		.append("div")
-	  		.attr("class", "tooltip tooltip_value")
-	  		.style("left", tooltipXposition)
-	  		.text("");
+		  tooltips =  d3.select("body")
+				  		.selectAll("div.tooltip_value")
+				  		.data(dimensions)
+				  		.enter()
+				  		.append("div")
+				  		.attr("class", "tooltip tooltip_value")
+				  		.style("left", tooltipXposition)
+				  		.text("");
 		  
 		  
 		  // Add grey background lines for context.
 		  background = svg.append("svg:g")
-		      .attr("class", "background")
-		    .selectAll("path")
-		      .data(cars)
-		    .enter().append("svg:path")
-		      .attr("d", path);
+		      			  .attr("class", "background")
+		                  .selectAll("path")
+		                  .data(cars)
+		                  .enter().append("svg:path")
+		                  .attr("d", path);
 		
 		  // Add blue foreground lines for focus.
 		  foreground = svg.append("svg:g")
-		      .attr("class", "foreground")
-		    .selectAll("path")
-		      .data(cars)
-		    .enter().append("svg:path")
-		      .attr("d", path)
-		      .on("mouseover", function(d) {
-	 		    	 tooltips.each(function (p,i){
-	 		    		  d3.select(this)
-	 		    		  	.style("top", y[p](d[p])+"px")
-	 		    		  	.text(d[p]);
-	 		    		  });
-	 		    	  
-	 		    	 highlight.data([d]).attr("d", path);
-	 		    	  
-	 		    	 var word = d["Word"]; //highlighted word
-	 		    	 
-	 		    	 tooltip_pk.text(word)
-	 		    	  				.style("top", d3.event.clientY + 15 + "px")
-	 		    	  				.style("left", d3.event.clientX + 15 + "px")
-	 		    	  				.style("display", "block");
-	 		    	  
-	 		    	 if (!isSelected)
-	 		    		  updatePwdList(word, false);
-		      })
-		      .style("stroke", function(d){return color(d[dimensions[colorDimension]]);});
+					      .attr("class", "foreground")
+					      .selectAll("path")
+					      .data(cars)
+					      .enter().append("svg:path")
+					      .attr("d", path)
+					      .on("mouseover", function(d){
+						    	  tooltips.each(function (p,i)
+						    	  {
+						    		  d3.select(this)
+						 		    	.style("top", y[p](d[p])+"px")
+						 		    	.text(d[p]);
+					 		      });
+					 		    	  
+						    	  var word = d["Word"]; //highlighted word
+					 		    	  
+						    	  highlight.data([d]).attr("d", path);
+				 		    	  tooltip_pk.text(word)
+				 		    	  			.style("top", d3.event.clientY + 15 + "px")
+				 		    	  			.style("left", d3.event.clientX + 15 + "px")
+				 		    	  			.style("display", "block");
+		
+				 		    	  if (!isSelected) updatePwdList(word, false);
+					    	})
+					    	.style("stroke", function(d)
+					    					{return color(d[dimensions[colorDimension]]);});
 
+		  tpSelecTop = function(d){
+							var dim = dimensions[0];
+							return y[dim](d[dim]) + "px";
+						};
+		  
 		  highlight = svg.append("svg:path")
 							.attr("class", "highlight")
 							.on("click", function(d){
-							    	  isSelected = true;
-							    	  selected.data([d]).attr("d", path);
-							    	  updatePwdList(d["Word"], true);
-							    	  tooltip_selected.style("top",tpSelecTop = function(){
-							    		  						var dim = dimensions[0];
-							    		  						return y[dim](d[dim]) + "px";})
-							    	  					.text(d["Word"]);
-						    	  })
+						    	isSelected = true;
+						    	selected.data([d]).attr("d", path);
+						    	updatePwdList(d["Word"], true);
+						    	tooltip_selected.style("top",tpSelecTop(d))
+						    	  					.text(d["Word"]);
+						    })
 						    .on("mouseout", function(){
-													d3.select(this).attr("d", null);
-													tooltip_pk.style("display", "none");
-												});
+								d3.select(this).attr("d", null);
+								tooltip_pk.style("display", "none");
+							});
 
 		  selected = svg.append("svg:path").attr("class", "selected");
 		  
 		  tooltip_pk = d3.select("body")
-		  					.append("div")
-		  					.attr("class","tooltip tooltip_pk");
+		  				 .append("div")
+		  				 .attr("class","tooltip tooltip_pk");
 		  tooltip_selected = d3.select("body")
-								.append("div")
-								.attr("class","tooltip tooltip_selected")
-								.style("left",function(){return leftOffset("stage_wrapper") + position(dimensions[0])+"px";});
+						       .append("div")
+							   .attr("class","tooltip tooltip_selected")
+							   .style("left", function(){
+								   return leftOffset("stage_wrapper") 
+								          + position(dimensions[0])+"px";
+								});
+							   		   
 		  		  
 		  // Add a group element for each dimension.
 		  var g = svg.selectAll(".dimension")
 		      .data(dimensions)
-		    .enter().append("svg:g")
+		      .enter().append("svg:g")
 		      .attr("class", "dimension")
 		      .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
 		      .on("click", function(d){
 		    	  // if the user clicks the axis, it is inverted
 		    	  if (y[d].brush.empty()){
 		    		  y[d].range(y[d].range().reverse());
-					  updateLines(1000);
-					  tooltip_selected.transition().duration(1000).style("top", tpSelecTop);
+		    		  updateLines(1000);
+					  tooltip_selected.transition().duration(1000).style("top", tpSelecTop(d));
 					  g.selectAll("g.axis").each(function(p){if (p==d) d3.select(this).call(axis.scale(y[d])); });
 		    	  }
 		      })
@@ -211,8 +218,9 @@ window.addEventListener("load", start, false);
 		  g.append("svg:g")
 		      .attr("class", "brush")
 		      .each(function(d) { 
-		    	  d3.select(this).call(y[d].brush = d3.svg.brush().y(y[d]).on("brush", brush)); })
-		    .selectAll("rect")
+		    	  d3.select(this).call(y[d].brush = d3.svg.brush().y(y[d]).on("brush", brush)); 
+		       })
+		      .selectAll("rect")
 		      .attr("x", -8)
 		      .attr("width", 16);
 		});
@@ -222,9 +230,12 @@ window.addEventListener("load", start, false);
 			if (dur){
 				foreground.transition().duration(dur).attr("d", path);
 				background.transition().duration(dur).attr("d", path);
-				// try-catch for the case of no highlighting or selection
-				try {highlight.transition().duration(dur).attr("d", path);} catch(err){}
-				try {selected.transition().duration(dur).attr("d", path	);} catch (err){}
+//				 //try-catch for the case of no highlighting or selection
+				highlight.transition().duration(dur).attr("d", path);
+				if (isSelected)
+					selected.transition().duration(dur).attr("d", path);
+//				try {highlight.transition().duration(dur).attr("d", path);} catch(err){}
+//				try {selected.transition().duration(dur).attr("d", path	);} catch (err){}
 			} else {
 				foreground.attr("d", path);
 				background.attr("d", path);
@@ -234,12 +245,12 @@ window.addEventListener("load", start, false);
 		}
 		
 		function position(d) {
-		  var v = dragging[d];
-		  return v == null ? x(d) : v;
+		    var v = dragging[d];
+			return v == null ? x(d) : v;
 		}
 		
 		function transition(g) {
-		  return g.transition().duration(500);
+			return g.transition().duration(500);
 		}
 		
 		function width(el){
@@ -256,7 +267,7 @@ window.addEventListener("load", start, false);
 		
 		// Returns the path for a given data point.
 		function path(d) {
-		  return line(dimensions.map(function(p) { return [position(p), y[p](d[p])]; }));
+			return line(dimensions.map(function(p) { return [position(p), y[p](d[p])]; }));
 		}
 		
 		// Handles a brush event, toggling the display of foreground lines.
@@ -272,37 +283,30 @@ window.addEventListener("load", start, false);
 		
 		// although the parameter is named words, each element is an array [word, frequency]
 		function updatePwdList(word, transition){
-			var words = [];
-			
-			if (pwds[word])
-				words = pwds[word].map(function(p){
-							// for each pwd associated with the current word,
-							// lets return an array [pwd, frequency]
-							return [p["Passwords"], p["Frequency"]];
-							});
-			
+												// for each pwd associated with the current word,
+												// lets return an array [pwd, frequency]
+			var words = !pwds[word] ? [] : pwds[word].map(function(p){return [p["Password"], p["Frequency"]];});
+			words.sort(function(a,b){return -(a[1]-b[1]);});
+
 			var wrappers = d3.select("#pwd_list")
-					.selectAll("div.pwd_wrapper")
-					.data(words);
+							 .selectAll("div.pwd_wrapper")
+							 .data(words);
 			
-			if (words.length>0){
-				words = words.slice(0,45);
-				
-				var min = words.slice(-1)[0][1],
-					max = words[0][1],
-					x1 = leftOffset("left_panel");
-				var xBar = d3.scale.linear().domain([min, max])
-									.range([x1, x1+width("left_panel")]);
-				
-				var enter = wrappers.enter();
-				
-				var textHL = function(d){return d[0] + " (" + d[1] + ")";};
-				var textRegular = function(d){return d[0];};
+			if (words.length>0)
+			{
+			    var     min = words.slice(-1)[0][1],
+				        max = words[0][1],
+				         x1 = leftOffset("left_panel"),
+				       xBar = d3.scale.linear().domain([min, max])
+								.range([x1, x1+width("left_panel")]),
+					  enter = wrappers.enter(),
+				     textHL = function(d){return d[0] + " (" + d[1] + ")";},
+			    textRegular = function(d){return d[0];};
 				
 				enter.append("div").attr("class", "pwd_wrapper")
-						.append("div").attr("class", "pwd_bar")
-						.select(function(){return this.parentNode;})
-						.append("p").attr("class", "pwd_label");
+					 .append("div").attr("class", "pwd_bar")
+					 .select(function(){return this.parentNode;})
+					 .append("p").attr("class", "pwd_label");
 						
 				wrappers.select("p").text(textRegular);
 	
@@ -315,13 +319,11 @@ window.addEventListener("load", start, false);
 							d3.select(this).select("div.pwd_bar").classed("pwd_bar_hl", false);
 						});
 				
-				if (transition)
-					wrappers.select("div.pwd_bar")
-							.transition()
-							.style("width", function(d){return xBar([d[1]]) + "px";});
-				else 
-					wrappers.select("div.pwd_bar")
-					.style("width", function(d){return xBar([d[1]]) + "px";});
+				if (transition)	wrappers.select("div.pwd_bar")
+										.transition()
+										.style("width", function(d){return xBar([d[1]]) + "px";});
+				else   			wrappers.select("div.pwd_bar")
+										.style("width", function(d){return xBar([d[1]]) + "px";});
 			}
 			
 			wrappers.exit().remove();				
