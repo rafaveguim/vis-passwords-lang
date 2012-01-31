@@ -9,7 +9,7 @@ html, body {
 .background path {
     fill: none;
     shape-rendering: crispedges;
-    stroke: #CCCCCC;
+    stroke: rgb(245,245,245);
     stroke-opacity: 0.4;
 }
 .foreground path {
