@@ -1,8 +1,8 @@
 
 
 var m = [30, 10, 10, 10], //margins
-	nQuantiles = 6, //number of quantiles
-	colorDimension = 0;
+	nQuantiles = 6, //number of quantiles for polylinear scale
+	colorDim = hRelFreq;  // name of the column mapped by color
 	
 var x,
 	y = {},
@@ -12,8 +12,8 @@ var x,
 
 var topPwds = {};
 
-var line = d3.svg.line(),
-	axis = d3.svg.axis().orient("left"),
+var line 		= d3.svg.line(),
+	axis 		= d3.svg.axis().orient("left"),
 	background,
 	foreground,
 	highlight,
@@ -22,9 +22,6 @@ var line = d3.svg.line(),
 	tooltip_pk,
 	tooltip_selected,
 	color;
-
-var pwds; // nested structure. The key is a word and the value is the collection (array)
-		  // of "rows" (associative array) corresponding to that word in the "TopPwdsPerWord.csv"
 
 window.addEventListener("load", start, false);
 
@@ -42,7 +39,7 @@ window.addEventListener("load", start, false);
 		
 			  // Extract the list of dimensions e sets the domain for the x-axis.
 			  x.domain(dimensions = d3.keys(cars[0]).filter(function(d) {
-			    return d != "Word"; }));
+			    return noAxisDimensions.indexOf(d)==-1; }));
 			  
 			  // creates a quantile scale function for each dimension
 			  dimensions.forEach(function(d,i,a){
@@ -64,13 +61,13 @@ window.addEventListener("load", start, false);
 					  			.range(range);
 				  
 				  // builds the diverging color mapping function based on a given dimension
-				  if (i==colorDimension)
+				  if (dimensions[i]==colorDim)
 					  	color = function(x){return x<0 ? "rosybrown" : "steelblue";};
 				  
 			  });
 			  
 		  
-			d3.csv("top_pwds_per_word.csv",	function(pwdsCsv){				
+		  d3.csv("top_pwds_per_word.csv", function(pwdsCsv){				
 						pwds = d3.nest()
 						.key(function(d){return d["Word"];})
 						.map(pwdsCsv);
@@ -102,26 +99,9 @@ window.addEventListener("load", start, false);
 					      .data(cars)
 					      .enter().append("svg:path")
 					      .attr("d", path)
-					      .on("mouseover", function(d){
-						    	  tooltips.each(function (p,i)
-						    	  {
-						    		  d3.select(this)
-						 		    	.style("top", y[p](d[p])+"px")
-						 		    	.text(d[p]);
-					 		      });
-					 		    	  
-						    	  var word = d["Word"]; //highlighted word
-					 		    	  
-						    	  highlight.data([d]).attr("d", path);
-				 		    	  tooltip_pk.text(word)
-				 		    	  			.style("top", d3.event.clientY + 15 + "px")
-				 		    	  			.style("left", d3.event.clientX + 15 + "px")
-				 		    	  			.style("display", "block");
-		
-				 		    	  if (!isSelected) updatePwdList(word, false);
-					    	})
-					    	.style("stroke", function(d)
-					    					{return color(d[dimensions[colorDimension]]);});
+					      .on("mouseover", highlighting)
+					      .style("stroke", function(d)
+					    				{return color(d[colorDim]);});
 
 		  tpSelecTop = function(d){
 							var dim = dimensions[0];
@@ -140,7 +120,17 @@ window.addEventListener("load", start, false);
 						    .on("mouseout", function(){
 								d3.select(this).attr("d", null);
 								tooltip_pk.style("display", "none");
-							});
+							})
+							/*.on("mousedown", function(d){
+								if (d3.event.ctrlKey){
+									var ids = coOccurIds(d[hCoOccur]);
+									foreground.filter(function(d){
+										if (ids.indexOf(d[hWordId])!= -1)
+											console.log(d[hWord]+"\n");
+										return ids.indexOf(d[hWordId]) != -1; })
+											  .style("stroke", "rgb(124,252,0)");  
+								}
+							})*/;
 
 		  selected = svg.append("svg:path").attr("class", "selected");
 		  
@@ -230,12 +220,9 @@ window.addEventListener("load", start, false);
 			if (dur){
 				foreground.transition().duration(dur).attr("d", path);
 				background.transition().duration(dur).attr("d", path);
-//				 //try-catch for the case of no highlighting or selection
 				highlight.transition().duration(dur).attr("d", path);
 				if (isSelected)
 					selected.transition().duration(dur).attr("d", path);
-//				try {highlight.transition().duration(dur).attr("d", path);} catch(err){}
-//				try {selected.transition().duration(dur).attr("d", path	);} catch (err){}
 			} else {
 				foreground.attr("d", path);
 				background.attr("d", path);
@@ -281,11 +268,30 @@ window.addEventListener("load", start, false);
 		  });
 		}
 		
+		function highlighting(d){
+			  // position axes' tooltips
+			  tooltips.each(function (p,i){
+				  d3.select(this)
+			    	.style("top", y[p](d[p])+"px")
+			    	.text(d[p]);
+			  });
+				  
+			  var word = d["Word"]; //highlighted word
+			  	  
+			  highlight.data([d]).attr("d", path);
+			  tooltip_pk.text(word) // position 'main tooltip'
+			  			.style("top", d3.event.clientY + 15 + "px")
+			  			.style("left", d3.event.clientX + 15 + "px")
+			  			.style("display", "block");
+			  
+			  if (!isSelected) updatePwdList(word, false);
+		}
+		
 		// although the parameter is named words, each element is an array [word, frequency]
 		function updatePwdList(word, transition){
 												// for each pwd associated with the current word,
-												// lets return an array [pwd, frequency]
-			var words = !pwds[word] ? [] : pwds[word].map(function(p){return [p["Password"], p["Frequency"]];});
+												// let's return an array [pwd, frequency]
+			var words = !pwds[word] ? [] : pwds[word].map(function(p){return [p[hPwd], p[hFreq]];});
 			words.sort(function(a,b){return -(a[1]-b[1]);});
 
 			var wrappers = d3.select("#pwd_list")
