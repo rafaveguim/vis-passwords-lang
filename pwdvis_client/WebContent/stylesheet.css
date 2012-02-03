@@ -10,11 +10,11 @@ html, body {
     fill: none;
     shape-rendering: crispedges;
     stroke: rgb(245,245,245);
-    stroke-opacity: 0.4;
+    stroke-opacity: 0.2;
 }
 .foreground path {
     fill: none;
-    stroke-opacity: 0.3;
+    stroke-opacity: 0.4;
 }
 .brush .extent {
     fill-opacity: 0.3;

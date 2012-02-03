@@ -62,7 +62,7 @@ window.addEventListener("load", start, false);
 				  
 				  // builds the diverging color mapping function based on a given dimension
 				  if (dimensions[i]==colorDim)
-					  	color = function(x){return x<0 ? "rosybrown" : "steelblue";};
+					  color = function(x){return x[colorDim]<0 ? "rosybrown" : "steelblue";};
 				  
 			  });
 			  
@@ -83,7 +83,6 @@ window.addEventListener("load", start, false);
 				  		.style("left", tooltipXposition)
 				  		.text("");
 		  
-		  
 		  // Add grey background lines for context.
 		  background = svg.append("svg:g")
 		      			  .attr("class", "background")
@@ -100,8 +99,7 @@ window.addEventListener("load", start, false);
 					      .enter().append("svg:path")
 					      .attr("d", path)
 					      .on("mouseover", highlighting)
-					      .style("stroke", function(d)
-					    				{return color(d[colorDim]);});
+					      .style("stroke", color);
 
 		  tpSelecTop = function(d){
 							var dim = dimensions[0];
@@ -121,16 +119,16 @@ window.addEventListener("load", start, false);
 								d3.select(this).attr("d", null);
 								tooltip_pk.style("display", "none");
 							})
-							/*.on("mousedown", function(d){
+							.on("mousedown", function(d){
 								if (d3.event.ctrlKey){
 									var ids = coOccurIds(d[hCoOccur]);
-									foreground.filter(function(d){
-										if (ids.indexOf(d[hWordId])!= -1)
-											console.log(d[hWord]+"\n");
-										return ids.indexOf(d[hWordId]) != -1; })
-											  .style("stroke", "rgb(124,252,0)");  
+									foreground.each(function(p){
+										if (ids.indexOf(p[hWordId]) != -1) // If p co-occur with d
+											d3.select(this).style("stroke", "steelblue").attr("display", null);
+										else d3.select(this).attr("display", "none");
+									});
 								}
-							})*/;
+							});
 
 		  selected = svg.append("svg:path").attr("class", "selected");
 		  
