@@ -8,9 +8,17 @@ var hPwd	  = "Password",
 	hMembers  = "WordMembers", // words contained in a password
 	hCoOccur  = "CoOccurrences",
 	hRelFreq  = "Relative Frequency Difference",
+	hRankFRel = "Relative Frequency Difference Ranking",
+	hRankG2   = "G2 Ranking",
 	
 	// dimensions that shouldn't be included as axes
 	noAxisDimensions = [hWord, hCoOccur, hWordId],
+	
+	// dimensions that should have axes with linear scales
+	linearDimensions = [hRankFRel, hRankG2],
+	
+	// sets of dimensions that should have equal scale
+	pairedDimensions = [ [hRankG2, hRankFRel] ],
 	
 	pwds; // nested structure. The key is a word and the value is the collection (array)
 	      // of "rows" (associative array) corresponding to that word in the "TopPwdsPerWord.csv"

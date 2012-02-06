@@ -1,7 +1,6 @@
 
 
 var m = [30, 10, 10, 10], //margins
-	nQuantiles = 6, //number of quantiles for polylinear scale
 	colorDim = hRelFreq;  // name of the column mapped by color
 	
 var x,
@@ -43,29 +42,28 @@ window.addEventListener("load", start, false);
 			  
 			  // creates a quantile scale function for each dimension
 			  dimensions.forEach(function(d,i,a){
-				  var quantiles = [], dThresholds = [];
+				  y[d] = axisScale(d, h, cars);
+			  });
+			  
+			  pairedDimensions.forEach(function(pair){
+				  var mergedDomain = [], scale;
 				  
-				  quantiles[d] = d3.scale.quantile()	// dimension's quantile function
-						.range(d3.range(1,nQuantiles+1))
-						.domain(cars.map(function(p){return +p[d];}));
+				  // merge domain of all the paired dimensions
+				  pair.forEach(function(dim){
+					  mergedDomain = 
+						  mergedDomain.concat(cars.map(function(d){return +d[dim]})); 
+				  });  
 				  
-				  // build an array with all the thresholds
-				  dThresholds[d] = d3.extent(cars, function(p) { return +p[d]; }); // adding dimensions's extent
-				  for(var j=nQuantiles-2; j>=0; j--) // adding quantiles' thresholds in the middle of the extent's array
-					  dThresholds[d].splice(1,0,quantiles[d].quantiles()[j]); 
-					  
-				  var l = h/nQuantiles; // height of each quantile
-				  var range = dThresholds[d].map(function(p,i){return (nQuantiles-i)*l;});
-					  
-				  y[d] = d3.scale.linear().domain(dThresholds[d])
-					  			.range(range);
-				  
-				  // builds the diverging color mapping function based on a given dimension
-				  if (dimensions[i]==colorDim)
-					  color = function(x){return x[colorDim]<0 ? "rosybrown" : "steelblue";};
+				  // now sets the scale for each dimension 
+				  pair.forEach(function(dim){ 
+					  scale = d3.scale.linear().domain(d3.extent(mergedDomain))
+						   .range([h, 0]);
+					  y[dim] = scale; });
 				  
 			  });
 			  
+		  // builds the diverging color mapping function based on a given dimension
+		  color = function(x){return x[colorDim]<0 ? "rosybrown" : "steelblue";};
 		  
 		  d3.csv("top_pwds_per_word.csv", function(pwdsCsv){				
 						pwds = d3.nest()
