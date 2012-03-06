@@ -148,15 +148,7 @@ window.addEventListener("load", start, false);
 		      .enter().append("svg:g")
 		      .attr("class", "dimension")
 		      .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
-		      .on("click", function(d){
-		    	  // if the user clicks the axis, it is inverted
-		    	  if (y[d].brush.empty()){
-		    		  y[d].range(y[d].range().reverse());
-		    		  updateLines(1000);
-					  tooltip_selected.transition().duration(1000).style("top", tpSelecTop(d));
-					  g.selectAll("g.axis").each(function(p){if (p==d) d3.select(this).call(axis.scale(y[d])); });
-		    	  }
-		      })
+		      
 		      .call(d3.behavior.drag()
 		        .on("dragstart", function(d) {
 		          dragging[d] = this.__origin__ = x(d);
@@ -198,11 +190,21 @@ window.addEventListener("load", start, false);
 		    .append("svg:text")
 		      .attr("text-anchor", "middle")
 		      .attr("y", -9)
-		      .text(String);
+		      .text(String)
+		      ;
 		
 		  // Add and store a brush for each axis.
 		  g.append("svg:g")
 		      .attr("class", "brush")
+		      .on("click", function(d){
+		    	  // if the user clicks the axis, it is inverted
+		    	  if (y[d].brush.empty()){
+		    		  y[d].range(y[d].range().reverse());
+		    		  updateLines(1000);
+					  tooltip_selected.transition().duration(1000).style("top", tpSelecTop(d));
+					  g.selectAll("g.axis").each(function(p){if (p==d) d3.select(this).call(axis.scale(y[d])); });
+		    	  }
+		      })
 		      .each(function(d) { 
 		    	  d3.select(this).call(y[d].brush = d3.svg.brush().y(y[d]).on("brush", brush)); 
 		       })
@@ -216,7 +218,8 @@ window.addEventListener("load", start, false);
 			if (dur){
 				foreground.transition().duration(dur).attr("d", path);
 				background.transition().duration(dur).attr("d", path);
-				highlight.transition().duration(dur).attr("d", path);
+				if (hightlight.data()!=null)
+					highlight.transition().duration(dur).attr("d", path);
 				if (isSelected)
 					selected.transition().duration(dur).attr("d", path);
 			} else {
