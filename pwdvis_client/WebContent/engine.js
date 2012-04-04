@@ -1,5 +1,3 @@
-
-
 var m = [30, 10, 10, 10], //margins
 	colorDim = hG2;  // name of the column mapped by color
 	
@@ -20,7 +18,9 @@ var line 		= d3.svg.line(),
 	tooltips,
 	tooltip_pk,
 	tooltip_selected,
-	color;
+	color,
+	brushed,
+	searched;
 
 window.addEventListener("load", start, false);
 
@@ -100,7 +100,7 @@ window.addEventListener("load", start, false);
 		                  .attr("d", path);
 		
 		  // Add blue foreground lines for focus.
-		  foreground = svg.append("svg:g")
+		  searched = brushed = foreground = svg.append("svg:g")
 					      .attr("class", "foreground")
 					      .selectAll("path")
 					      .data(cars)
@@ -274,14 +274,28 @@ window.addEventListener("load", start, false);
 		}
 		
 		// Handles a brush event, toggling the display of foreground lines.
+		// Coordinates with search, also.
 		function brush() {
 		  var actives = dimensions.filter(function(p) { return !y[p].brush.empty(); }),
 		      extents = actives.map(function(p) { return y[p].brush.extent(); });
-		  foreground.style("display", function(d) {
-		    return actives.every(function(p, i) {
-		      return extents[i][0] <= d[p] && d[p] <= extents[i][1];
-		    }) ? null : "none";
-		  });
+		  
+		  // indicates brushing is disabled and search is active
+		  if (actives.length==0 && searched!=foreground){
+			  brushed = foreground;
+			  search(); // so we need to re-search
+		  }
+		  else
+			  brushed = searched.filter(function(d){
+				  display = actives.every(function(p, i) {
+				      return extents[i][0] <= d[p] && d[p] <= extents[i][1];
+				  });
+				  
+				  d3.select(this).style("display", display ? null : "none" );
+				  
+				  return display;
+			  });
+		  
+		  
 		}
 		
 		function highlighting(d){
@@ -360,9 +374,19 @@ window.addEventListener("load", start, false);
 		function search(){
 			var key = document.getElementById("searchbox").value;
 			
-			foreground.style("display", function(d) {
-				w = d[hWord];
-				return (w.length >= key.length
-						&& w.substring(0, key.length)==key) ? null : "none";  
-			});
+			// when there's no key, it means the search box was reseted
+			if (key==""){
+				searched = foreground; // resets searched selection 
+				brush(); // brush needs to be updated!
+			}	
+			else  // if there's a key, search operates over brush results
+				searched = brushed.filter(function(d){
+					  w = d[hWord];
+					  display = (w.length >= key.length
+								&& w.substring(0, key.length)==key);
+					  
+					  d3.select(this).style("display", display ? null : "none" );
+					  
+					  return display;
+				});
 		}
