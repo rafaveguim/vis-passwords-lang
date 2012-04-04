@@ -1,7 +1,7 @@
 
 
 var m = [30, 10, 10, 10], //margins
-	colorDim = hRelFreq;  // name of the column mapped by color
+	colorDim = hG2;  // name of the column mapped by color
 	
 var x,
 	y = {},
@@ -26,13 +26,22 @@ window.addEventListener("load", start, false);
 
 	function start(){
 
-		var w = width("stage_wrapper") - m[1] - m[3];
-		var h = height("stage_wrapper") - m[0] - m[2];
+		var w = width("stage_wrapper") - 20; // magic number to reduce usual error in width informed by the browser
+		var h = height("stage_wrapper") - height("bottom_toolbar");
 		x = d3.scale.ordinal().rangePoints([0, w], 0.3);
 		
-		var svg = d3.select("svg")
-		  .append("svg:g")
-		  .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+		var svg = d3.select("#stage_wrapper")
+				  .insert("svg:svg", "#bottom_toolbar")
+				  .attr("id", "stage")
+				  .attr("width", w)
+				  .attr("height", h)
+				  .append("svg:g")
+				  .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+		
+		// after using h and w to define the svg elem.
+		// we adjust them to define the axes
+		h -= m[0] + m[2];
+		w -= m[1] + m[3]
 		
 		d3.csv("word_measures_top.csv", function(cars) {
 		
@@ -44,8 +53,9 @@ window.addEventListener("load", start, false);
 			  dimensions.forEach(function(d,i,a){
 				  y[d] = axisScale(d, h, cars);
 			  });
-			  
-			  pairedDimensions.forEach(function(pair){
+
+			  // This block is for making axis to have the same scale
+		      pairedDimensions.forEach(function(pair){
 				  var mergedDomain = [], scale;
 				  
 				  // merge domain of all the paired dimensions
@@ -63,8 +73,8 @@ window.addEventListener("load", start, false);
 			  });
 			  
 		  // builds the diverging color mapping function based on a given dimension
-		  color = function(x){return x[colorDim]<0 ? "rosybrown" : "steelblue";};
-		  
+		  //color = function(x){return x[colorDim]<0 ? "rosybrown" : "steelblue";};
+		  color = function(x){return x[colorDim]<0 ? "rosybrown" : "rgb(102,179,204)";};
 		  d3.csv("top_pwds_per_word.csv", function(pwdsCsv){				
 						pwds = d3.nest()
 						.key(function(d){return d["Word"];})
@@ -104,8 +114,9 @@ window.addEventListener("load", start, false);
 							return y[dim](d[dim]) + "px";
 						};
 		  
-		  highlight = svg.append("svg:path")
+		  highlight = svg.append("svg:polyline")
 							.attr("class", "highlight")
+							//.attr("style", "filter:url(#dropshadow)") Doesn't work properly on Chrome. What a pitty.
 							.on("click", function(d){
 						    	isSelected = true;
 						    	selected.data([d]).attr("d", path);
@@ -218,7 +229,7 @@ window.addEventListener("load", start, false);
 			if (dur){
 				foreground.transition().duration(dur).attr("d", path);
 				background.transition().duration(dur).attr("d", path);
-				if (hightlight.data()!=null)
+				if (highlight.data()!=null)
 					highlight.transition().duration(dur).attr("d", path);
 				if (isSelected)
 					selected.transition().duration(dur).attr("d", path);
@@ -251,9 +262,15 @@ window.addEventListener("load", start, false);
 			return document.getElementById(el).getBoundingClientRect().left + window.pageXOffset ;
 		}
 		
-		// Returns the path for a given data point.
 		function path(d) {
 			return line(dimensions.map(function(p) { return [position(p), y[p](d[p])]; }));
+		}
+		
+		// Returns the path for a given data point.
+		function path2(d) {
+			var points = dimensions.map(function(p) { return parseInt(position(p)) + "," + parseInt(y[p](d[p])); });
+			return points.join(" ");
+			//return line(dimensions.map(function(p) { return [position(p), y[p](d[p])]; }));
 		}
 		
 		// Handles a brush event, toggling the display of foreground lines.
@@ -277,7 +294,7 @@ window.addEventListener("load", start, false);
 				  
 			  var word = d["Word"]; //highlighted word
 			  	  
-			  highlight.data([d]).attr("d", path);
+			  highlight.data([d]).attr("points", path2);
 			  tooltip_pk.text(word) // position 'main tooltip'
 			  			.style("top", d3.event.clientY + 15 + "px")
 			  			.style("left", d3.event.clientX + 15 + "px")
@@ -338,4 +355,14 @@ window.addEventListener("load", start, false);
 		// the x position is relative to the page
 		function tooltipXposition(d){
 			return x(d)+leftOffset("stage_wrapper")+"px";
+		}
+		
+		function search(){
+			var key = document.getElementById("searchbox").value;
+			
+			foreground.style("display", function(d) {
+				w = d[hWord];
+				return (w.length >= key.length
+						&& w.substring(0, key.length)==key) ? null : "none";  
+			});
 		}

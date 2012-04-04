@@ -53,17 +53,17 @@ html, body {
     padding: 3px 4px;
 }
 .tooltip_selected {
-    background-color: rgba(124,252,0, 0.9);
-    border-color: rgb(0,255,0);
+    background-color: rgba(110,63,252, 0.8);
+    border-color: rgb(83,48,204);
 }
 .highlight {
     fill: none;
-    stroke: #FD6E8A;
+    stroke: rgb(253, 110, 138);
     stroke-width: 3;
 }
 .selected {
     fill: none;
-    stroke: rgb(124,252,0);
+    stroke: rgb(110,63,252);
     stroke-width: 3;
 }
 #left_panel {
@@ -78,10 +78,7 @@ html, body {
     height: 100%;
     width: 85%;
 }
-#stage {
-    height: 100%;
-    width: 100%;
-}
+
 #leftPanel ol li {
     font-size: 12pt;
 }
@@ -118,4 +115,20 @@ html, body {
 
 #pwd_list {
     margin-top: 25px;
+}
+
+#bottom_toolbar{
+	padding-bottom: 25px;
+	text-align: right;
+	padding-right: 35px;
+}
+
+#searchbox{
+	margin: 0;
+	height: 25px;
+ 	-webkit-appearance: none;
+ 	padding-left: 25px;
+  	background: url(images/search_icon.gif) no-repeat 2px;
+  	border: solid 1px rgb(200,200,200); 
+	/*border-style: inherit;*/
 }
