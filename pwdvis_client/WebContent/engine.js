@@ -116,7 +116,7 @@ window.addEventListener("load", start, false);
 		  
 		  highlight = svg.append("svg:polyline")
 							.attr("class", "highlight")
-							//.attr("style", "filter:url(#dropshadow)") Doesn't work properly on Chrome. What a pitty.
+							//.attr("style", "filter:url(#dropshadow)") Doesn't work properly on Chrome. What a pity.
 							.on("click", function(d){
 						    	isSelected = true;
 						    	selected.data([d]).attr("d", path);
@@ -125,7 +125,7 @@ window.addEventListener("load", start, false);
 						    	  					.text(d["Word"]);
 						    })
 						    .on("mouseout", function(){
-								d3.select(this).attr("d", null);
+								d3.select(this).attr("points", null);
 								tooltip_pk.style("display", "none");
 							})
 							.on("mousedown", function(d){
@@ -262,15 +262,15 @@ window.addEventListener("load", start, false);
 			return document.getElementById(el).getBoundingClientRect().left + window.pageXOffset ;
 		}
 		
+		// Returns the path's 'd' attribute for a given data item
 		function path(d) {
 			return line(dimensions.map(function(p) { return [position(p), y[p](d[p])]; }));
 		}
 		
-		// Returns the path for a given data point.
-		function path2(d) {
+		// Returns the polyline points for a given data item.
+		function points(d) {
 			var points = dimensions.map(function(p) { return parseInt(position(p)) + "," + parseInt(y[p](d[p])); });
 			return points.join(" ");
-			//return line(dimensions.map(function(p) { return [position(p), y[p](d[p])]; }));
 		}
 		
 		// Handles a brush event, toggling the display of foreground lines.
@@ -294,7 +294,7 @@ window.addEventListener("load", start, false);
 				  
 			  var word = d["Word"]; //highlighted word
 			  	  
-			  highlight.data([d]).attr("points", path2);
+			  highlight.data([d]).attr("points", points);
 			  tooltip_pk.text(word) // position 'main tooltip'
 			  			.style("top", d3.event.clientY + 15 + "px")
 			  			.style("left", d3.event.clientX + 15 + "px")
