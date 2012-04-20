@@ -13,16 +13,18 @@ var hPwd	  	 = "Password",
 	hRankFRel 	 = "Relative Frequency Difference Ranking",
 	hRankG2   	 = "Difference Ranking",
 	hG2		  	 = "G2",
+    hAbsFreqBnc  = "Frequency - BNC",
+    hAbsFreqPwd  = "Frequency - Passwords",
 	
 	// dimensions that shouldn't be included as axes
 	noAxisDimensions = [hWord, hCoOccur, hWordId, 
-	                    hRelFreq, hRelFreqBnc, hRelFreqPwd, hRankFRel],
+	                    hRelFreq, hAbsFreqBnc, hAbsFreqPwd, hRankFRel],
 	
 	// dimensions that should have axes with linear scales
 	linearDimensions = [hRankG2],
 	
 	// sets of dimensions that should have equal scale
-	pairedDimensions = [];
+	pairedDimensions = [/*[hRelFreqBnc, hRelFreqPwd]*/];
 	
 var	pwds; // nested structure. The key is a word and the value is the collection (array)
 	      // of "rows" (associative array) corresponding to that word in the "TopPwdsPerWord.csv"
