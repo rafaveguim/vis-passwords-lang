@@ -246,17 +246,11 @@ window.addEventListener("load", start, false);
 			return v == null ? x(d) : v;
 		}
 		
-		function transition(g) {
-			return g.transition().duration(500);
-		}
+		function transition(g) { return g.transition().duration(500); }
 		
-		function width(el){
-			return document.getElementById(el).clientWidth;
-		}
+		function width(el) { return document.getElementById(el).clientWidth;  }
 		
-		function height(el){
-			return document.getElementById(el).clientHeight;
-		}
+		function height(el){ return document.getElementById(el).clientHeight; }
 		
 		function leftOffset(el){
 			return document.getElementById(el).getBoundingClientRect().left + window.pageXOffset ;
@@ -294,8 +288,6 @@ window.addEventListener("load", start, false);
 				  
 				  return display;
 			  });
-		  
-		  
 		}
 		
 		function highlighting(d){
