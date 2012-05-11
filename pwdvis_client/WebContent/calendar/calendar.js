@@ -34,6 +34,12 @@ function start(){
     })
 }
 
+/**
+ * Draws a radial representation for years.
+ * It consists of concentric 'orbits', where years, represented
+ * by small ellipses, lie over.
+ * Each orbit corresponds to a decade.
+ */
 function drawBall(){
     var w = 1000,
         h = 500;
@@ -45,41 +51,53 @@ function drawBall(){
     var svg = d3.select("#ball").append("svg")
         .attr("width", w)
         .attr("height", h)
-        .attr("class", "YlGnBu");
+        .attr("class", "YlGnBu")
+        .append("g")
+        .attr("transform","translate(300,300)"); // refer to ColorBrewer CSS
 
     var decades_ = decades(d3.keys(freqByYear).sort());
-    
+
+    // computes radius for an orbit o
+    var radius = function(o){return o*15+15;};
+    // computes the angle for an index i [0..9]
+    var angle = function(i) {return 36*i};
+
+    // appending 'ring lanes'
     svg.append("g")
         .attr("class", "ring")
-        .attr("transform","translate(300,200)")
         .selectAll("circle")
-        .data(d3.range(decades_.length))
+        .data(d3.range(decades_.length+1))
         .enter().append("circle")
         .attr("cy",0)
         .attr("cx",0)
-        .attr("r", function(d){return d*15+15;})
+        .attr("r", radius)
         .attr("stroke", "rgb(200,200,200)")
         .attr("fill", "none");
 
-//    svg.selectAll('text')
-//	    .data(d3.range(10))
-//	    .enter().append('text')
-//	    .attr("x", function(d,i){
-//	         var r     = (decades_.length+1)*15 + 15,
-//	             angle = 36*i;
-//	         return r*Math.cos(angle*Math.PI/180);
-//	     })
-//	     .attr("y", function(d){
-//	     	var r     = (decades_.length+1)*15 + 15,
-//	         	angle = 36;
-//	     	return r*Math.sin(angle*Math.PI/180);
-//	     })
-//	     .text(String);
-    
+    svg.append("g")
+        .selectAll('text')
+	    .data(d3.range(10))
+	    .enter().append('text')
+        .attr('class', 'external_label')
+	    .attr("x", function(d,i){
+	         return radius(decades_.length)*Math.cos(angle(i)*Math.PI/180);
+	     })
+	     .attr("y", function(d,i){
+	     	return radius(decades_.length)*Math.sin(angle(i)*Math.PI/180);
+	     })
+//        .attr("rotate", function(d,i) {
+//            return angle(i)*Math.PI/180 < Math.PI ? "180" : null;
+//        })
+        .attr('rotate',function(d,i){return 0;/*270+angle(i)*/})
+//        .attr("text-anchor", function(d,i) {
+//            return angle(i)*Math.PI/180 < Math.PI ? "end" : null;
+//        })
+	    .text(String);
+
+    // two-levels of data-binding here. decades -> svg:g; years -> svg:circle
     svg.selectAll("g.decade")
         .data(decades_)
         .enter().append("g")
-        .attr("transform","translate(300,200)")
         .attr("class", "decade")
       .selectAll("circle.year")
         .data(function(a,i){ // cross decades with years
@@ -88,24 +106,11 @@ function drawBall(){
             })
         })
         .enter().append("circle")//.attr('class', 'year')
-        .attr("cx", function(d,i){
-            var r     = d.decade*15+15,
-                angle = 36*i;
-            return r*Math.cos(angle*Math.PI/180);
-        })
-        .attr("cy", function(d,i){
-            var r     = d.decade*15+15,
-                angle = 36*i;
-            return r*Math.sin(angle*Math.PI/180);
-        })
+        .attr("cx", function(d,i){ return radius(d.decade)*Math.cos(angle(i)*Math.PI/180); })
+        .attr("cy", function(d,i){ return radius(d.decade)*Math.sin(angle(i)*Math.PI/180); })
         .attr("r", 4)
-        //.attr("fill", function(d,i){return "rgb("+ d.decade*40+","+d.decade*40+","+d.decade*40+")";});
-        .attr("class", function(d) {
-            return "q" + color(d.freq) + "-9";
-        })
-        .on("mouseover", function(d){
-            drawCalendar([d.year]);
-        })
+        .attr("class", function(d) { return "q" + color(d.freq) + "-9"; })
+        .on("mouseover", function(d){ drawCalendar([d.year]); })
         .append("title")
         .text(function(d){return ""+d.year;});
        
@@ -184,6 +189,12 @@ function crossDecades(arrays){
     return arrays;
 }
 
+/**
+ * Divide an array of year in groups of ten.
+ * @param years array of years to be split in decades. Should start with the first year of a decade and should
+ * not contain gaps.
+ * @return 2-dimensional array. Each column is a decade.
+ */
 function decades(years){
     var dec = d3.split(years, function(d){return d%10==0;});
     dec.forEach(function(d,i){d.unshift(d[0]-1);});
