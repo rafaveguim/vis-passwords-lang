@@ -45,13 +45,15 @@ function drawBall(){
     var svg = d3.select("#ball").append("svg")
         .attr("width", w)
         .attr("height", h)
-        .attr("class", "YlOrRd");
+        .attr("class", "YlGnBu");
 
+    var decades_ = decades(d3.keys(freqByYear).sort());
+    
     svg.append("g")
         .attr("class", "ring")
         .attr("transform","translate(300,200)")
         .selectAll("circle")
-        .data(d3.range(decades(d3.keys(freqByYear)).length))
+        .data(d3.range(decades_.length))
         .enter().append("circle")
         .attr("cy",0)
         .attr("cx",0)
@@ -59,8 +61,23 @@ function drawBall(){
         .attr("stroke", "rgb(200,200,200)")
         .attr("fill", "none");
 
+//    svg.selectAll('text')
+//	    .data(d3.range(10))
+//	    .enter().append('text')
+//	    .attr("x", function(d,i){
+//	         var r     = (decades_.length+1)*15 + 15,
+//	             angle = 36*i;
+//	         return r*Math.cos(angle*Math.PI/180);
+//	     })
+//	     .attr("y", function(d){
+//	     	var r     = (decades_.length+1)*15 + 15,
+//	         	angle = 36;
+//	     	return r*Math.sin(angle*Math.PI/180);
+//	     })
+//	     .text(String);
+    
     svg.selectAll("g.decade")
-        .data(decades(d3.keys(freqByYear).sort()))
+        .data(decades_)
         .enter().append("g")
         .attr("transform","translate(300,200)")
         .attr("class", "decade")
@@ -91,6 +108,7 @@ function drawBall(){
         })
         .append("title")
         .text(function(d){return ""+d.year;});
+       
 }
 
 
@@ -137,7 +155,8 @@ function drawCalendar(years){
     rect.filter(function(d) { return d in data; })
         .attr("class", function(d) { return "day q" + colorDay(data[d]) + "-9"; })
         .select("title")
-        .text(function(d) { return format(d) + ": " + data[d]; });
+        .text(function(d) { return format(d) + ": " + data[d]; })
+        .attr("transform","translate(300,200)");
 }
 
 function width(el) { return document.getElementById(el).clientWidth;  }
