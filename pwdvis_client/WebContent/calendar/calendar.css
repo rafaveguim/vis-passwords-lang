@@ -15,5 +15,27 @@
 }
 
 .external_label {
-    font-size: 10pt;
+    font-size: 9pt;
+    font-style: italic;
+    fill: gray;
+}
+
+.internal_label {
+    font-size: 8pt;
+    font-style: italic;
+    fill: gray;
+}
+
+.ring {
+	stroke: rgb(200,200,200);
+	fill: none;
+	stroke-width: 0.3;
+}
+
+#measure_text
+{
+    position: absolute;
+    visibility: hidden;
+    height: auto;
+    width: auto;
 }

@@ -58,40 +58,49 @@ function drawBall(){
     var decades_ = decades(d3.keys(freqByYear).sort());
 
     // computes radius for an orbit o
-    var radius = function(o){return o*15+15;};
-    // computes the angle for an index i [0..9]
-    var angle = function(i) {return 36*i};
+    var radius = function(o){return o*17+17;};
+    // computes the angle for an index i [0..9] in radians
+    var angle = function(i) {return 36*i*Math.PI/180};
 
     // appending 'ring lanes'
     svg.append("g")
         .attr("class", "ring")
         .selectAll("circle")
-        .data(d3.range(decades_.length+1))
+        .data(d3.range(decades_.length))
         .enter().append("circle")
         .attr("cy",0)
         .attr("cx",0)
-        .attr("r", radius)
-        .attr("stroke", "rgb(200,200,200)")
-        .attr("fill", "none");
-
+        .attr("r", radius);
+    
+    // average size of the internal label
+    var labelWidth = document.getElementById('measure_text').clientWidth;
+    var labelHeight = d3.select('#measure_text').style('font-size').replace(/\D+/,'');
+    
+    console.log(labelHeight);
+    
+    svg.append('g')
+    	.attr('class', 'internal_label')
+    	.selectAll('text')
+    	.data(decades_.map(function(a){return a[0];}))
+    	.enter().append('text')
+    	.text(function(d,i){return i<3 ? '' : d+'\'s';})
+    	.attr('transform', function(d,i){return	'rotate(-35)'
+    		+ 'translate(0,3)'
+    		+ 'translate(0,'+ radius(i) +') ';})
+    	.attr('text-anchor', 'middle');
+    
     svg.append("g")
         .selectAll('text')
 	    .data(d3.range(10))
 	    .enter().append('text')
         .attr('class', 'external_label')
 	    .attr("x", function(d,i){
-	         return radius(decades_.length)*Math.cos(angle(i)*Math.PI/180);
+	         return radius(decades_.length)*Math.cos(angle(i));
 	     })
 	     .attr("y", function(d,i){
-	     	return radius(decades_.length)*Math.sin(angle(i)*Math.PI/180);
+	    	var y = radius(decades_.length)*Math.sin(angle(i));
+	    	return y + d3.select(this).style('font-size').replace(/\D+/,'')/2;
 	     })
-//        .attr("rotate", function(d,i) {
-//            return angle(i)*Math.PI/180 < Math.PI ? "180" : null;
-//        })
-        .attr('rotate',function(d,i){return 0;/*270+angle(i)*/})
-//        .attr("text-anchor", function(d,i) {
-//            return angle(i)*Math.PI/180 < Math.PI ? "end" : null;
-//        })
 	    .text(String);
 
     // two-levels of data-binding here. decades -> svg:g; years -> svg:circle
@@ -106,8 +115,8 @@ function drawBall(){
             })
         })
         .enter().append("circle")//.attr('class', 'year')
-        .attr("cx", function(d,i){ return radius(d.decade)*Math.cos(angle(i)*Math.PI/180); })
-        .attr("cy", function(d,i){ return radius(d.decade)*Math.sin(angle(i)*Math.PI/180); })
+        .attr("cx", function(d,i){ return radius(d.decade)*Math.cos(angle(i)); })
+        .attr("cy", function(d,i){ return radius(d.decade)*Math.sin(angle(i)); })
         .attr("r", 4)
         .attr("class", function(d) { return "q" + color(d.freq) + "-9"; })
         .on("mouseover", function(d){ drawCalendar([d.year]); })
