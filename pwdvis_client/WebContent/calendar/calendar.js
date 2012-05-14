@@ -6,30 +6,35 @@
  * To change this template use File | Settings | File Templates.
  */
 
-var margin = {top: 19, right: 20, bottom: 20, left: 19},
-        cellSize = 17; // cell size
+var margin = {top: 19, right: 0, bottom: 20, left: 20},
+    cellSize;
 
 var day     = d3.time.format("%w"),
     week    = d3.time.format("%U"),
     year    = d3.time.format("%Y"),
     percent = d3.format(".1%"),
-    format  = d3.time.format("%Y-%m-%d");
+    fullFormat  = d3.time.format("%Y-%m-%d"),
+    mmddFormat  = d3.time.format("%m-%d");
 
-var rows, data, freqByYear;
+
+var rows, freqByDay;
 
 var colorDay;
 
 window.addEventListener("load", start, false);
 
 function start(){
-    d3.csv('calendar.csv', function(rows){
+    d3.csv('calendar_.csv', function(rows){
+
+        // calendar metrics
+        cellSize = (width('chart') - margin.right - margin.left)/53;
+
         this.rows = rows;
-        data = nestByDate(rows);
-        freqByYear = freqByYear_(rows);
+        freqByDay = nestByDate(rows);
         colorDay = d3.scale.quantile()
-                    .domain(frequency())
+                    .domain(d3.values(freqByDay))
                     .range(d3.range(9));
-        drawCalendar([2010]);
+        drawOverallCalendar();
         drawBall();
     })
 }
@@ -43,6 +48,7 @@ function start(){
 function drawBall(){
     var w = 1000,
         h = 500;
+    var freqByYear = freqByYear_(rows);
 
     var color = d3.scale.quantile()
         .domain(d3.values(freqByYear))
@@ -53,7 +59,7 @@ function drawBall(){
         .attr("height", h)
         .attr("class", "YlGnBu")
         .append("g")
-        .attr("transform","translate(300,300)"); // refer to ColorBrewer CSS
+        .attr("transform","translate(300,250)"); // refer to ColorBrewer CSS
 
     var decades_ = decades(d3.keys(freqByYear).sort());
 
@@ -72,19 +78,13 @@ function drawBall(){
         .attr("cx",0)
         .attr("r", radius);
     
-    // average size of the internal label
-    var labelWidth = document.getElementById('measure_text').clientWidth;
-    var labelHeight = d3.select('#measure_text').style('font-size').replace(/\D+/,'');
-    
-    console.log(labelHeight);
-    
     svg.append('g')
     	.attr('class', 'internal_label')
     	.selectAll('text')
     	.data(decades_.map(function(a){return a[0];}))
     	.enter().append('text')
     	.text(function(d,i){return i<3 ? '' : d+'\'s';})
-    	.attr('transform', function(d,i){return	'rotate(-35)'
+    	.attr('transform', function(d,i){return	'rotate(0)'
     		+ 'translate(0,3)'
     		+ 'translate(0,'+ radius(i) +') ';})
     	.attr('text-anchor', 'middle');
@@ -125,10 +125,54 @@ function drawBall(){
        
 }
 
+function drawOverallCalendar(){
+    var w  = width('chart'), h = height('chart');
+
+    var daysOfYear = freqByDayOfYear(rows),
+        color = d3.scale.quantile()
+                .domain(d3.values(daysOfYear))
+                .range(d3.range(9));
+
+    var svg = d3.select("#chart").selectAll("svg");
+    svg.data([]).exit().remove();
+
+    svg = d3.select("#chart").selectAll("svg")
+        .data([1967]) // a common year starting on Sunday
+        .enter().append("svg")
+        .attr("width", w)
+        .attr("height", h)
+        .attr("class", "YlGnBu")
+        .append("g")
+        .attr("transform", "translate(" + margin.left + ","
+        + (margin.top + (h - cellSize * 7) / 2) + ")");
+
+    svg.append("text")
+        .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
+        .attr("text-anchor", "middle")
+        .text("Overall");
+
+    var rect = svg.selectAll("rect.day")
+        .data(function(d) { return d3.time.days(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
+        .enter().append("rect")
+        .attr("class", "day")
+        .attr("width", cellSize)
+        .attr("height", cellSize)
+        .attr("x", function(d) { return week(d) * cellSize; })
+        .attr("y", function(d) { return day(d) * cellSize; })
+        .datum(function(d){return mmddFormat(d);})
+        .attr("class", function(d) { return "day q" + color(daysOfYear[d]) + "-9"; })
+        .append('title')
+        .text(function(d) { return d + ": " + daysOfYear[d]; });
+
+    svg.selectAll("path.month")
+        .data(function(d) { return d3.time.months(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
+        .enter().append("path")
+        .attr("class", "month")
+        .attr("d", monthPath);
+}
 
 function drawCalendar(years){
-    var w  = width('chart') - margin.right - margin.left,
-        h = 136;
+    var w  = width('chart'), h = height('chart');
 
     var svg = d3.select("#chart").selectAll("svg");
     svg.data([]).exit().remove();
@@ -136,11 +180,11 @@ function drawCalendar(years){
     svg = d3.select("#chart").selectAll("svg")
         .data(years)
         .enter().append("svg")
-        .attr("width", w + margin.right + margin.left)
-        .attr("height", h + margin.top + margin.bottom)
+        .attr("width", w)
+        .attr("height", h)
         .attr("class", "YlGnBu")
         .append("g")
-        .attr("transform", "translate(" + (margin.left + (w - cellSize * 53) / 2) + ","
+        .attr("transform", "translate(" + margin.left + ","
         + (margin.top + (h - cellSize * 7) / 2) + ")");
 
     svg.append("text")
@@ -158,7 +202,7 @@ function drawCalendar(years){
         .attr("y", function(d) { return day(d) * cellSize; });
 
     rect.append("title")
-        .text(function(d) { return d; });
+        .text(function(d) { return fullFormat(d) + ': 0'; });
 
     svg.selectAll("path.month")
         .data(function(d) { return d3.time.months(new Date(d, 0, 1), new Date(d + 1, 0, 1)); })
@@ -166,11 +210,10 @@ function drawCalendar(years){
         .attr("class", "month")
         .attr("d", monthPath);
 
-    rect.filter(function(d) { return d in data; })
-        .attr("class", function(d) { return "day q" + colorDay(data[d]) + "-9"; })
-        .select("title")
-        .text(function(d) { return format(d) + ": " + data[d]; })
-        .attr("transform","translate(300,200)");
+    rect.filter(function(d) { return d in freqByDay; })
+        .attr("class", function(d) { return "day q" + colorDay(freqByDay[d]) + "-9"; })
+        .select('title')
+        .text(function(d) { return fullFormat(d) + ": " + freqByDay[d]; });
 }
 
 function width(el) { return document.getElementById(el).clientWidth;  }
@@ -210,12 +253,23 @@ function decades(years){
     return dec;
 }
 
-function freqByYear_(rows){
+function freqByDayOfYear(rows){
     return d3.nest()
-        .key(function(d){return d.Year;})
+        .key(function(d){return mmddFormat(new Date(d.YEAR, d.MONTH-1, d.DAY));})
         .rollup(function(d){
             return d3.sum(d.map(function(e){
-                return +e.Frequency;
+                return +e.DATE_FREQUENCY;
+            }));
+        })
+        .map(rows);
+}
+
+function freqByYear_(rows){
+    return d3.nest()
+        .key(function(d){return d.YEAR;})
+        .rollup(function(d){
+            return d3.sum(d.map(function(e){
+                return +e.DATE_FREQUENCY;
             }));
         })
         .map(rows);
@@ -223,7 +277,7 @@ function freqByYear_(rows){
 
 function nestByDate(rows){
     return d3.nest()
-        .key(function(d){return new Date(d.Year,d.Month,d.Day);})
-        .rollup(function(d){return +d[0].Frequency;})
+        .key(function(d){return new Date(d.YEAR,d.MONTH-1,d.DAY);})
+        .rollup(function(d){return +d[0].DATE_FREQUENCY;})
         .map(rows);
 }
