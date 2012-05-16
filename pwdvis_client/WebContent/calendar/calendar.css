@@ -32,6 +32,19 @@
 	stroke-width: 0.3;
 }
 
+circle.hover {
+    fill: lightgray;
+}
+
+.invisible {
+    fill-opacity: 0;
+}
+
+circle.selection {
+    stroke-width: 2;
+    stroke: orange;
+}
+
 #measure_text
 {
     position: absolute;
