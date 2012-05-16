@@ -48,12 +48,18 @@ function drawWordle(date){
         && date.getMonth()== d.MONTH-1
         && date.getDate()== d.DAY;});
 
-    var fontSize = d3.scale.log()
-           .domain(d3.extent(set.map(function(d){return +d.PWD_FREQUENCY;})))
-           .range([20,80]);
+    var extent   = d3.extent(set.map(function(d){return +d.PWD_FREQUENCY;})),
+        fontSize = d3.scale.log()
+                     .domain(extent)
+                     .range([20,80]),
+        color    = d3.scale.log()
+                     .domain(extent)
+                     .range([1,5]);
 
     var words = set.map(function(d){
-        return {text: d.RAW, size: fontSize(+d.PWD_FREQUENCY)};
+        return {text: d.RAW, size: fontSize(+d.PWD_FREQUENCY),
+                color: 'q'+Math.round(color(+d.PWD_FREQUENCY))+'-6',
+                value: +d.PWD_FREQUENCY};
     });
 
     var w = width('wordle'), h = height('wordle');
@@ -62,6 +68,8 @@ function drawWordle(date){
         .font('Trebuchet MS')
         .rotate(function() { return /*~~(Math.random() * 2) * 90*/0; })
         .fontSize(function(d) { return d.size; })
+        .color(function(d){return d.color;})
+        .value(function(d){return d.value;})
         .on("end", draw)
         .start();
 }
@@ -72,6 +80,7 @@ function draw(words){
     d3.select('#wordle').selectAll('svg')
         .data([null])
         .enter().append('svg')
+        .attr('class', 'Greys')
         .attr('width', w)
         .attr('height', h)
         .append('g')
@@ -81,13 +90,14 @@ function draw(words){
 
     var setter = function(sel){
         sel.style("font-size", function(d) { return d.size + "px"; })
-            .style('font-family', 'Trebuchet MS')
-            .attr("text-anchor", "middle")
-            //.attr('text-rendering', 'optimizeSpeed')
-            .attr("transform", function(d) {
-                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-            })
-            .text(function(d) { return d.text; });
+           .attr("text-anchor", "middle")
+           .attr("transform", function(d) {
+               return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+           })
+           .attr('class', function(d){return d.color;})
+           .text(function(d) { return d.text; })
+           .append('title')
+           .text(function(d){return d.value;});
     }
 
     var bound = svg.selectAll('text').data(words);

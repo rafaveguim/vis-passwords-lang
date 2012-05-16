@@ -1,5 +1,6 @@
 // Word cloud layout by Jason Davies, http://www.jasondavies.com/word-cloud/
 // Algorithm due to Jonathan Feinberg, http://static.mrfeinberg.com/bv_ch03.pdf
+// Modified by Rafael (included 'color' attribute)
 (function(exports) {
   function cloud() {
     var size = [256, 256],
@@ -13,7 +14,9 @@
         timeInterval = Infinity,
         event = d3.dispatch("word", "end"),
         timer = null,
-        cloud = {};
+        cloud = {},
+        color = cloudColor,
+        value = cloudValue;
 
     cloud.start = function() {
       var board = zeroArray((size[0] >> 5) * size[1]),
@@ -27,7 +30,9 @@
           font: font.call(this, d, i),
           rotate: rotate.call(this, d, i),
           size: ~~fontSize.call(this, d, i),
-          padding: cloudPadding.call(this, d, i)
+          padding: cloudPadding.call(this, d, i),
+          color: color.call(this, d, i),
+          value: value.call(this,d,i)
         };
       }).sort(function(a, b) { return b.size - a.size; });
 
@@ -168,6 +173,20 @@
       return cloud;
     };
 
+    // by Rafael
+    cloud.color = function(x){
+        if (!arguments.length) return color;
+        color = d3.functor(x);
+        return cloud;
+    }
+
+    // by Rafael
+    cloud.value = function(x){
+        if (!arguments.length) return value;
+        value = d3.functor(x);
+        return cloud;
+    }
+
     cloud.padding = function(x) {
       if (!arguments.length) return padding;
       padding = d3.functor(x);
@@ -183,6 +202,16 @@
 
   function cloudFont() {
     return "serif";
+  }
+
+  // by Rafael
+  function cloudColor(){
+      return null;
+  }
+
+  // by Rafael
+  function cloudValue(){
+      return null;
   }
 
   function cloudFontSize(d) {

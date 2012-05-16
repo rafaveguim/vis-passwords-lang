@@ -52,3 +52,8 @@ circle.selection {
     height: auto;
     width: auto;
 }
+
+#wordle text{
+    font-family: 'Trebuchet MS';
+    /*font-weight: bold;*/
+}
