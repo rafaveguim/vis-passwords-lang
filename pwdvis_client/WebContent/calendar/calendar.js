@@ -10,43 +10,41 @@ var margin = {top: 19, right: 0, bottom: 20, left: 20},
     cellSize;
 
 var day     = d3.time.format("%w"),
+    month   = d3.time.format("%m"),
     week    = d3.time.format("%U"),
     year    = d3.time.format("%Y"),
-    percent = d3.format(".1%"),
     fullFormat  = d3.time.format("%Y-%m-%d"),
     mmddFormat  = d3.time.format("%m-%d");
 
 
-var rows, days, daysOfYear;
-
-var colorDay;
+var tree, daysOfYear;
 
 window.addEventListener("load", start, false);
 
 function start(){
     d3.csv('calendar_.csv', function(rows){
-
         // calendar metrics
         cellSize = (width('chart') - margin.right - margin.left)/53;
 
-        this.rows = rows;
-        days  = frewByDate(rows);
-        daysOfYear = freqByDayOfYear(rows);
-
-        colorDay = d3.scale.quantile()
-                    .domain(d3.values(days))
-                    .range(d3.range(9));
-
+        daysOfYear = d3.nest()
+		    .key(function(d){return mmddFormat(new Date(d.YEAR, d.MONTH-1, d.DAY));})
+		    .rollup(function(d){
+		        return d3.sum(d.map(function(e){
+		            return +e.PWD_FREQUENCY;
+		        }));
+		    })
+		    .map(rows);
         drawOverallCalendar();
+        
+        tree = d3.nest().key(function(d){return +d.YEAR;})
+                 .key(function(d){return new Date(d.YEAR,d.MONTH-1,d.DAY);})
+                 .map(rows);
         drawBall();
-        //drawWordle();
     })
 }
 
 function drawWordle(date){
-    var set = rows.filter(function(d){return date.getFullYear()==d.YEAR
-        && date.getMonth()== d.MONTH-1
-        && date.getDate()== d.DAY;});
+    var set = tree[year(date)][date];
 
     var extent   = d3.extent(set.map(function(d){return +d.PWD_FREQUENCY;})),
         fontSize = d3.scale.log()
@@ -112,15 +110,21 @@ function draw(words){
  * It consists of concentric 'orbits', where years, represented
  * by small ellipses, lie over.
  * Each orbit corresponds to a decade.
- */
+  */
 function drawBall(){
     var w = width('ball'), h = height('ball');
 
-    var freqByYear = freqByYear_(rows),
-        decades_   = decades(d3.keys(freqByYear).sort());
+    var years = {};
+    d3.keys(tree).forEach(function(k){
+        years[k] = d3.sum(d3.values(tree[k]).map(function(u){
+            return +u[0].DATE_FREQUENCY;
+        }))
+    });
+
+    var decades = decades_(d3.keys(years).sort());
 
     var color = d3.scale.quantile()
-        .domain(d3.values(freqByYear))
+        .domain(d3.values(years))
         .range(d3.range(9));
 
     var svg = d3.select("#ball").append("svg")
@@ -151,7 +155,7 @@ function drawBall(){
     svg.append("g")
         .attr("class", "ring")
         .selectAll("circle")
-        .data(d3.range(decades_.length))
+        .data(d3.range(decades.length))
         .enter().append("circle")
         .attr("r", radius);
 
@@ -159,7 +163,7 @@ function drawBall(){
     svg.append('g')
     	.attr('class', 'internal_label')
     	.selectAll('text')
-    	.data(decades_.map(function(a){return a[0];}))
+    	.data(decades.map(function(a){return a[0];}))
     	.enter().append('text')
     	.text(function(d,i){return i<3 ? '' : d+'s';})
     	.attr('transform', function(d,i){return	'rotate(0)'
@@ -174,10 +178,10 @@ function drawBall(){
 	    .enter().append('text')
         .attr('class', 'external_label')
 	    .attr("x", function(d,i){
-	         return radius(decades_.length)*Math.cos(angle(i));
+	         return radius(decades.length)*Math.cos(angle(i));
 	     })
 	     .attr("y", function(d,i){
-	    	var y = radius(decades_.length)*Math.sin(angle(i));
+	    	var y = radius(decades.length)*Math.sin(angle(i));
 	    	return y + d3.select(this).style('font-size').replace(/\D+/,'')/2;
 	     })
 	    .text(String);
@@ -189,14 +193,14 @@ function drawBall(){
 
     // two-levels of data-binding here. decades -> svg:g; years -> svg:circle
     svg.selectAll("g.decade")
-        .data(decades_)
+        .data(decades)
         .enter()
         .append("g")
         .attr("class", "decade")
       .selectAll("circle")
         .data(function(a,i){ // cross decades with years
             return a.map(function(d,j){
-                return {year:+d, decade:i, freq: freqByYear[+d]}
+                return {year:+d, decade:i, freq: years[+d]}
             })
         })
         .enter()
@@ -213,7 +217,7 @@ function drawBall(){
         .on("mouseover", function(){ align(hover, this); })
         .on("mouseout", function(){ hover.attr('display','none') })
         .append("title")
-        .text(function(d){return d.year});
+        .text(function(d){return d.year+': '+d.freq;});
 
     var selection = svg.append('circle')
             .attr('class','selection')
@@ -264,6 +268,15 @@ function drawOverallCalendar(){
 }
 
 function drawCalendar(year){
+    var dates = {};
+    d3.keys(tree[year]).forEach(function(d){
+        dates[new Date(d)] = +d3.values(tree[year][d])[0].DATE_FREQUENCY;
+    });
+
+    var color = d3.scale.log()
+        .domain(d3.extent(d3.values(dates)))
+        .range([0,8]);
+
     var w  = width('chart'), h = height('chart');
 
     d3.select('#chart').select('svg').remove(); // cleaning
@@ -302,10 +315,10 @@ function drawCalendar(year){
         .attr("class", "month")
         .attr("d", monthPath);
 
-    rect.filter(function(d) { return d in days; })
-        .attr("class", function(d) { return "day q" + colorDay(days[d]) + "-9"; })
+    rect.filter(function(d) { return d in dates; })
+        .attr("class", function(d) { return "day q" + Math.round(color(dates[d])) + "-9"; })
         .select('title')
-        .text(function(d) { return fullFormat(d) + ": " + days[d]; });
+        .text(function(d) { return fullFormat(d) + ": " + dates[d]; });
 }
 
 /**
@@ -348,7 +361,7 @@ function crossDecades(arrays){
  * not contain gaps.
  * @return 2-dimensional array. Each column is a decade.
  */
-function decades(years){
+function decades_(years){
     var dec = d3.split(years, function(d){return d%10==0;});
     dec.forEach(function(d,i){d.unshift(d[0]-1);});
     return dec;
@@ -359,26 +372,32 @@ function freqByDayOfYear(rows){
         .key(function(d){return mmddFormat(new Date(d.YEAR, d.MONTH-1, d.DAY));})
         .rollup(function(d){
             return d3.sum(d.map(function(e){
-                return +e.DATE_FREQUENCY;
+                return +e.PWD_FREQUENCY;
             }));
         })
         .map(rows);
 }
 
-function freqByYear_(rows){
+function freqByYear(rows){
     return d3.nest()
         .key(function(d){return d.YEAR;})
         .rollup(function(d){
             return d3.sum(d.map(function(e){
-                return +e.DATE_FREQUENCY;
+                return +e.PWD_FREQUENCY;
             }));
         })
         .map(rows);
 }
 
-function frewByDate(rows){
+function freqByDate(rows){
     return d3.nest()
         .key(function(d){return new Date(d.YEAR,d.MONTH-1,d.DAY);})
         .rollup(function(d){return +d[0].DATE_FREQUENCY;})
+        .map(rows);
+}
+
+function nestByDate(rows){
+    return d3.nest()
+        .key(function(d){return new Date(d.YEAR,d.MONTH-1,d.DAY);})
         .map(rows);
 }
