@@ -28,11 +28,6 @@ function start(){
 
         daysOfYear = d3.nest()
 		    .key(function(d){return mmddFormat(new Date(d.YEAR, d.MONTH-1, d.DAY));})
-		    .rollup(function(d){
-		        return d3.sum(d.map(function(e){
-		            return +e.PWD_FREQUENCY;
-		        }));
-		    })
 		    .map(rows);
         drawOverallCalendar();
         
@@ -43,38 +38,60 @@ function start(){
     })
 }
 
-function drawWordle(date){
-    var set = tree[year(date)][date];
-
+/**
+ * Draws Wordle
+ * @param dates array of dates
+ * @param fFont d3 scale function that determines the font size,
+ * e.g., d3.scale.log()
+ */
+function drawWordle(dates, fFont){
+    var set = d3.merge(dates.map(function(d){ return tree[year(d)][d] }));
+    set = set.filter(function(d){return d!=null});
+    
     var extent   = d3.extent(set.map(function(d){return +d.PWD_FREQUENCY;})),
-        fontSize = d3.scale.log()
-                     .domain(extent)
-                     .range([20,80]),
-        color    = d3.scale.log()
-                     .domain(extent)
-                     .range([1,5]);
+        fontSize = fFont.domain(extent).range([15,80]),
+        // for color, fixed hue and variable lightness and saturation
+        uninterp = d3.scale.linear().domain(extent).range([0,1]),
+        interp   = d3.interpolateHsl('hsl(30,100%,88%)', 'hsl(30,25%,25%)');
+        color    = function(x){return interp(uninterp(x))};
+//        hue       = function(){return 30},
+//        lightness = d3.scale.linear().domain(extent).range([88,25]),
+//        saturation= d3.scale.linear().domain(extent).range([100,25]),
+//        color     = function(d){return 'hsl('+hue(d)+','+saturation(d)+'%,'+lightness(d)+'%)'};
 
     var words = set.map(function(d){
         return {text: d.RAW, size: fontSize(+d.PWD_FREQUENCY),
-                color: 'q'+Math.round(color(+d.PWD_FREQUENCY))+'-6',
+        		color: color(+d.PWD_FREQUENCY),
                 value: +d.PWD_FREQUENCY};
     });
 
     var w = width('wordle'), h = height('wordle');
+    
+    plotWords([], true); //reset wordle
+    
     d3.layout.cloud().size([w, h])
         .words(words)
+        .timeInterval(2)
         .font('Trebuchet MS')
         .rotate(function() { return /*~~(Math.random() * 2) * 90*/0; })
         .fontSize(function(d) { return d.size; })
         .color(function(d){return d.color;})
         .value(function(d){return d.value;})
-        .on("end", draw)
+        .on("word", function(d){plotWords([d], false)}) // plots words incrementally
         .start();
 }
 
-function draw(words){
+/**
+ * Plots a collection of words on the screen
+ * @param words collection of words
+ * @param scratch if true, clear the previous words before
+ * plotting. Otherwise, plot over the existent words. 
+ */
+function plotWords(words, scratch){
+	if (scratch==null) scratch = true;
     var w = width('wordle'), h = height('wordle');
 
+    // append svg only if necessary
     d3.select('#wordle').selectAll('svg')
         .data([null])
         .enter().append('svg')
@@ -82,7 +99,9 @@ function draw(words){
         .attr('width', w)
         .attr('height', h)
         .append('g')
-        .attr('transform', 'translate('+w/2+','+h/2+')');
+        .attr('transform', 'translate('+w/2+','+h/2+')')
+        .append('text')
+        .attr('class','hover');
 
     svg = d3.select('#wordle').selectAll('svg').select('g');
 
@@ -92,12 +111,16 @@ function draw(words){
            .attr("transform", function(d) {
                return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
            })
-           .attr('class', function(d){return d.color;})
+           //.attr('class', function(d){return d.color;})
+           .attr('fill', function(d){return d.color;})
            .text(function(d) { return d.text; })
+           //.on('mouseover', function(d){})
            .append('title')
            .text(function(d){return d.value;});
     }
 
+    var words = scratch ? words : svg.selectAll('text').data().concat(words);
+    
     var bound = svg.selectAll('text').data(words);
     bound.exit().remove();
     bound.enter().append("text");
@@ -226,10 +249,17 @@ function drawBall(){
 }
 
 function drawOverallCalendar(){
+	var freq = d3.nest()
+		  .key(function(entry){return entry.key})
+		  .rollup(function(d){ 
+		         return d3.sum(d[0].value.map(function(e){ return +e.PWD_FREQUENCY; }))
+		    })
+		  .map(d3.entries(daysOfYear));
+	
     var w  = width('chart'), h = height('chart'),
         year = 1967,
         color = d3.scale.quantile()
-                .domain(d3.values(daysOfYear))
+                .domain(d3.values(freq))
                 .range(d3.range(9));
 
     d3.select('#chart').select('svg').remove(); // cleaning
@@ -247,6 +277,7 @@ function drawOverallCalendar(){
         .attr("text-anchor", "middle")
         .text("Overview");
 
+    
     var rect = svg.selectAll("rect.day")
         .data(function(d) { return d3.time.days(new Date(year, 0, 1), new Date(year + 1, 0, 1)); })
         .enter().append("rect")
@@ -256,9 +287,13 @@ function drawOverallCalendar(){
         .attr("x", function(d) { return week(d) * cellSize; })
         .attr("y", function(d) { return day(d) * cellSize; })
         .datum(function(d){return mmddFormat(d);})
-        .attr("class", function(d) { return "day q" + color(daysOfYear[d]) + "-9"; })
+        .attr("class", function(mmdd) { return "day q" + color(freq[mmdd]) + "-9"; })
+        .on('click', function(mmdd){
+        	var dates = d3.keys(tree).map(function(y){return fullFormat.parse(y+'-'+mmdd);});
+        	drawWordle(dates, d3.scale.linear());
+        })
         .append('title')
-        .text(function(d) { return d + ": " + daysOfYear[d]; });
+        .text(function(d) { return d + ": " + freq[d]; });
 
     svg.selectAll("path.month")
         .data(function() { return d3.time.months(new Date(year, 0, 1), new Date(year + 1, 0, 1)); })
@@ -303,7 +338,7 @@ function drawCalendar(year){
         .attr("x", function(d) { return week(d) * cellSize; })
         .attr("y", function(d) { return day(d) * cellSize; })
         .on('click', function(d){
-            drawWordle(d);
+            drawWordle([d], d3.scale.log());
         });
 
     rect.append("title")
