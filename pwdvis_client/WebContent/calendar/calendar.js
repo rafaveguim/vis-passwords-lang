@@ -54,10 +54,6 @@ function drawWordle(dates, fFont){
         uninterp = d3.scale.linear().domain(extent).range([0,1]),
         interp   = d3.interpolateHsl('hsl(30,100%,88%)', 'hsl(30,25%,25%)');
         color    = function(x){return interp(uninterp(x))};
-//        hue       = function(){return 30},
-//        lightness = d3.scale.linear().domain(extent).range([88,25]),
-//        saturation= d3.scale.linear().domain(extent).range([100,25]),
-//        color     = function(d){return 'hsl('+hue(d)+','+saturation(d)+'%,'+lightness(d)+'%)'};
 
     var words = set.map(function(d){
         return {text: d.RAW, size: fontSize(+d.PWD_FREQUENCY),
@@ -114,7 +110,20 @@ function plotWords(words, scratch){
            //.attr('class', function(d){return d.color;})
            .attr('fill', function(d){return d.color;})
            .text(function(d) { return d.text; })
-           //.on('mouseover', function(d){})
+           .on('mouseover', function(d){
+        	   var c = d3.hsl(d3.select(this).attr('fill'));
+        	   var hl = c.l > 0.5 ? c.darker() : c.brighter();
+        	   d3.select(this)
+        	     .attr('fill', hl.toString())
+        	     .attr('original_color', c.toString())
+        	     .attr('cursor','hand');
+            })
+            .on('mouseout', function(d){
+        	   var c = d3.select(this).attr('original_color');
+        	   d3.select(this)
+        	     .attr('fill', c)
+        	     .attr('originalColor', null);
+            })
            .append('title')
            .text(function(d){return d.value;});
     }
