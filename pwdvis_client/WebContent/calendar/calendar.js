@@ -22,7 +22,7 @@ var tree, daysOfYear;
 window.addEventListener("load", start, false);
 
 function start(){
-    d3.csv('calendar_.csv', function(rows){
+    d3.csv('calendar_huge.csv', function(rows){
         // calendar metrics
         cellSize = (width('chart') - margin.right - margin.left)/53;
 
@@ -314,6 +314,7 @@ function drawBall(){
             drawCalendar(d.year);
             align(selection, this);
             selection.style('fill', d3.select(this).style('fill'));
+            drawWordleForYears([d.year]);
         })
         .on("mouseover", function(){ align(hover, this); })
         .on("mouseout", function(){ hover.attr('display','none') })
