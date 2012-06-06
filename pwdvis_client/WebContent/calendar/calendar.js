@@ -29,13 +29,26 @@ function start(){
         daysOfYear = d3.nest()
 		    .key(function(d){return mmddFormat(new Date(d.YEAR, d.MONTH-1, d.DAY));})
 		    .map(rows);
-        drawOverallCalendar();
-        
         tree = d3.nest().key(function(d){return +d.YEAR;})
-                 .key(function(d){return new Date(d.YEAR,d.MONTH-1,d.DAY);})
-                 .map(rows);
+		        .key(function(d){return new Date(d.YEAR,d.MONTH-1,d.DAY);})
+		        .map(rows);
+
+        drawAggregateCalendar();
         drawBall();
+        
+        drawWordleForYears(d3.keys(tree));
     })
+}
+
+/**
+ * Draws an aggregate wordle for passwords corresponding
+ * to all the years informed.
+ * @param years array of year. It can be strings or numbers. we're robust =D
+ */
+function drawWordleForYears(years){
+	years = years.map(function(d){return +d});
+	dates = d3.merge(years.map(function(y){return d3.time.days(new Date(y++,0,1), new Date(y,0,1));}))
+	drawWordle(dates, d3.scale.log());
 }
 
 /**
@@ -47,6 +60,9 @@ function start(){
 function drawWordle(dates, fFont){
     var set = d3.merge(dates.map(function(d){ return tree[year(d)][d] }));
     set = set.filter(function(d){return d!=null});
+
+    set.sort(function(a,b){return +b.PWD_FREQUENCY - +a.PWD_FREQUENCY});
+    set = set.slice(0,300);
     
     var extent   = d3.extent(set.map(function(d){return +d.PWD_FREQUENCY;})),
         fontSize = fFont.domain(extent).range([15,80]),
@@ -68,12 +84,14 @@ function drawWordle(dates, fFont){
     d3.layout.cloud().size([w, h])
         .words(words)
         .timeInterval(2)
+        .padding(50)
         .font('Trebuchet MS')
         .rotate(function() { return /*~~(Math.random() * 2) * 90*/0; })
         .fontSize(function(d) { return d.size; })
         .color(function(d){return d.color;})
         .value(function(d){return d.value;})
         .on("word", function(d){plotWords([d], false)}) // plots words incrementally
+        //.on('end')
         .start();
 }
 
@@ -169,9 +187,12 @@ function drawBall(){
         .attr('class', 'invisible')
         .attr('width' , w)
         .attr('height', h)
-        .on('click', function(){
+        .on('click', function(d,i){
             selection.attr('display','none');
-            drawOverallCalendar();
+            ringSelected.style('display', 'none');
+            clearDim();
+            drawAggregateCalendar();
+            drawWordleForYears(d3.keys(tree));
         });
 
     // everything is drawn in this shifted g
@@ -190,6 +211,39 @@ function drawBall(){
         .data(d3.range(decades.length))
         .enter().append("circle")
         .attr("r", radius);
+    
+    // an invisible 'base ring' to broaden the clicking area of rings
+    svg.select('g.ring')
+       .selectAll("circle.mask")
+       .data(d3.range(decades.length))
+       .enter().append("circle")
+       .attr('class', 'mask')
+       .style('stroke-width', 6)
+       .attr("r", radius)
+       .on('mouseover', function(d){
+    	   ringHover.style('display', null);
+    	   ringHover.attr('r', radius(d));
+       })
+       .on('mouseout', function(){
+    	   ringHover.style('display', 'none');
+       })
+       .on('click', function(d, i){
+    	   dimDecadesExcept(i);
+    	   ringSelected.style('display', null);
+    	   ringSelected.attr('r', radius(d));
+    	   selection.attr('display', 'none');
+    	   var years = d3.range(i*10+1900, i*10+1910);
+    	   drawAggregateCalendar(years);
+    	   drawWordleForYears(years);
+       });
+    
+    var ringSelected = svg.select('g.ring')
+                          .append('circle')
+                          .attr('class', 'selection decade_selection'),
+        ringHover = svg.select('g.ring')
+				       .append('circle')
+				       .attr('class', 'hover decade_hover')
+				       .style('pointer-events', 'none');
 
     // appending 'internal labels' (1940s, 1990s..)
     svg.append('g')
@@ -216,10 +270,24 @@ function drawBall(){
 	    	var y = radius(decades.length)*Math.sin(angle(i));
 	    	return y + d3.select(this).style('font-size').replace(/\D+/,'')/2;
 	     })
-	    .text(String);
+	    .text(String)
+	    .attr('cursor', 'hand')
+	    .on('click', function(d){
+	    	var years = svg.selectAll('circle.year')
+		    	   .classed('dimmed', true)
+		    	   .classed('unclickable', true)
+		    	   .filter(function(y){return (y.year+'')[3]==d})
+		    	   .classed('dimmed', false)
+		    	   .classed('unclickable', false)
+		    	   .data()
+		    	   .map(function(d){return +d.year});
+		    drawAggregateCalendar(years);
+	    	ringSelected.style('display', 'none');
+	    	drawWordleForYears(years);
+	    });
 
     var hover = svg.append('circle')
-        .attr('class','hover')
+        .attr('class','year_hover')
         .attr('display','none')
         .attr('r',7);
 
@@ -241,6 +309,7 @@ function drawBall(){
         .attr("cy", function(d,i){ return radius(d.decade)*Math.sin(angle(i)); })
         .attr("r", 4)
         .attr("class", function(d) { return "q" + color(d.freq) + "-9"; })
+        .classed("year", true)
         .on("click", function(d){
             drawCalendar(d.year);
             align(selection, this);
@@ -252,16 +321,26 @@ function drawBall(){
         .text(function(d){return d.year+': '+d.freq;});
 
     var selection = svg.append('circle')
-            .attr('class','selection')
+            .attr('class','selection year_selection')
             .attr('display','none')
             .attr('r',7);
 }
 
-function drawOverallCalendar(){
+/**
+ * Draws an aggregate calendar corresponding to a range of years.
+ * @param range array like [min, max], inclusive. If not informed,
+ * draws the calendar aggregating all the years available.
+ */
+function drawAggregateCalendar(years){
+	if (years==null) // if no years informed, consider them all
+		years = d3.keys(tree).map(function(d){return +d});
+		
 	var freq = d3.nest()
 		  .key(function(entry){return entry.key})
 		  .rollup(function(d){ 
-		         return d3.sum(d[0].value.map(function(e){ return +e.PWD_FREQUENCY; }))
+			  var dates = d[0].value;
+			  dates = dates.filter(function(date){return years.indexOf(+date.YEAR)!=-1})
+		      return d3.sum(dates.map(function(e){ return +e.PWD_FREQUENCY}))
 		    })
 		  .map(d3.entries(daysOfYear));
 	
@@ -284,8 +363,7 @@ function drawOverallCalendar(){
     svg.append("text")
         .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
         .attr("text-anchor", "middle")
-        .text("Overview");
-
+        .text(years[0]+" to "+years[years.length-1]);
     
     var rect = svg.selectAll("rect.day")
         .data(function(d) { return d3.time.days(new Date(year, 0, 1), new Date(year + 1, 0, 1)); })
@@ -298,7 +376,9 @@ function drawOverallCalendar(){
         .datum(function(d){return mmddFormat(d);})
         .attr("class", function(mmdd) { return "day q" + color(freq[mmdd]) + "-9"; })
         .on('click', function(mmdd){
-        	var dates = d3.keys(tree).map(function(y){return fullFormat.parse(y+'-'+mmdd);});
+        	var dates = d3.keys(tree)
+        				  .filter(function(d){return years.indexOf(+d)!=-1;})
+        				  .map(function(y){return fullFormat.parse(y+'-'+mmdd);});
         	drawWordle(dates, d3.scale.linear());
         })
         .append('title')
@@ -397,6 +477,32 @@ function crossDecades(arrays){
         return a.map(function(d,j){return {year:d, decade:i}})
     })
     return arrays;
+}
+
+/**
+ * Modify the "ball" so that all decades are dimmed except the informed one.
+ * @param i index of the decade not to be dimmed
+ */
+function dimDecadesExcept(i){
+	d3.selectAll('g.decade')
+ 	  .filter(function(o,k){return i!=k})
+ 	  .selectAll('circle.year')
+ 	  .classed('dimmed', true)
+ 	  .classed('unclickable', true);
+	d3.selectAll('g.decade')
+  	  .filter(function(o,k){return i==k})
+  	  .selectAll('circle.year')
+      .classed('dimmed', false)
+      .classed('unclickable', false);
+}
+
+/**
+ * Cancel the dim effect for all decades
+ */
+function clearDim(){
+	d3.selectAll('circle.year')
+	  .classed('dimmed', false)
+	  .classed('unclickable', false);
 }
 
 /**

@@ -3,6 +3,10 @@
     shape-rendering: crispEdges;
 }
 
+.unclickable{
+	pointer-events: none;
+}
+
 .day {
     fill: #fff;
     stroke: #ccc;
@@ -32,17 +36,48 @@
 	stroke-width: 0.3;
 }
 
-circle.hover {
-    fill: lightgray;
-}
-
 .invisible {
     fill-opacity: 0;
 }
 
-circle.selection {
-    stroke-width: 2;
+.invisible_border {
+    stroke: rgba(200,200,200,0);
+}
+
+.mask {
+	stroke: rgba(200,200,200,0);
+	fill-opacity: 0;
+}
+
+.dimmed {
+	fill-opacity: 0.1;	
+}
+
+.hover {
+    stroke: black;
+}
+
+.selection {
     stroke: orange;
+}
+
+.decade_hover {
+    stroke-width: 0.5;
+    fill: none;
+}
+
+.decade_selection {
+    stroke-width: 1;
+    fill: none;
+}
+
+.year_hover {
+    stroke-width: 1;
+    fill: lightgray;
+}
+
+.year_selection {
+	stroke-width: 2;
 }
 
 #measure_text
