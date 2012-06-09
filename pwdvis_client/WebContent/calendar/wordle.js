@@ -67,8 +67,7 @@ function drawWordle(dates, fFontSize){
 
     plotWords([], true); //reset cloud
     // reset "filtered out" region
-    d3.selectAll('.filtered-out')
-      .data([]).exit().remove();
+    getFilteredTexts().data([]).exit().remove();
     
     var callback = function(d){plotWords([d], false)};
     layoutCloud(subset, callback, true);
@@ -119,13 +118,11 @@ function filterOut(d){
 	  .transition()
 	  .each('end', function(d){
 		  // creating a corresponding element and placing it in the "filtered out" region
-		  var out = d3.select('#wordle').select('svg').selectAll('text.filtered-out').data();
+		  var out = getFilteredTexts().data();
 		  out.push(d);
-		  d3.select('#wordle').select('svg').selectAll('text.filtered-out')
-		    .data(out).enter().append('text')
+		  getFilteredTexts().data(out).enter().append('text')
 		    .classed('filtered-out', true);
-		  d3.selectAll('text.filtered-out')
-		    .attr('text-anchor', 'start')
+		  getFilteredTexts().attr('text-anchor', 'start')
 		    .style('cursor', 'hand')
 		    .attr('x', binOffset)
 		    .attr('y', function(d,i){return (i+1)*22;})
@@ -151,7 +148,7 @@ function filterOut(d){
 	  })
 	  .attr('transform', function(d){
 		  var x = binOffset - cloudWidth/2,
-		      y = (d3.selectAll('text.filtered-out').data().length + 1)*22 - cloudHeight/2;
+		      y = (getFilteredTexts().data().length + 1)*22 - cloudHeight/2;
 		  return 'translate('+ [x,y] +')';		  
 	  })
 	  .attr('text-anchor', 'start')
@@ -177,8 +174,7 @@ function backToCloud(o){
 	// removes it from the filtered out region 
 	d3.select(this).remove();
 	// updates filtered out region (y-position)
-	d3.selectAll('text.filtered-out')
-	  .attr('y', function(d,i){return (i+1)*22;});
+	getFilteredText().attr('y', function(d,i){return (i+1)*22;});
 	// updates cloud
 	updateCloud();
 }
@@ -235,8 +231,6 @@ function updateCloud(){
 		  .enter()
 		  .append('text')
 		  .call(cloudSetter)
-		console.log('added');
-		console.log(diff);
 	}
 	
 	layoutCloud(words, callback, false);
@@ -284,4 +278,8 @@ function layoutCloud(words, callback, incremental){
 	     .on("word", function(d){ if (incremental) callback(d)}) // plots words incrementally
 	     .on("end", function(d){ if (!incremental) callback(d)}) // plots words incrementally
 	     .start();
+}
+
+function getFilteredTexts(){
+	return d3.select('#wordle').select('svg').selectAll('text.filtered-out');
 }
