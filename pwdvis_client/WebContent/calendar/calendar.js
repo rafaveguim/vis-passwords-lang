@@ -51,109 +51,6 @@ function drawWordleForYears(years){
 	drawWordle(dates, d3.scale.log());
 }
 
-/**
- * Draws Wordle
- * @param dates array of dates
- * @param fFont d3 scale function that determines the font size,
- * e.g., d3.scale.log()
- */
-function drawWordle(dates, fFont){
-    var set = d3.merge(dates.map(function(d){ return tree[year(d)][d] }));
-    set = set.filter(function(d){return d!=null});
-
-    set.sort(function(a,b){return +b.PWD_FREQUENCY - +a.PWD_FREQUENCY});
-    set = set.slice(0,300);
-    
-    var extent   = d3.extent(set.map(function(d){return +d.PWD_FREQUENCY;})),
-        fontSize = fFont.domain(extent).range([15,80]),
-        // for color, fixed hue and variable lightness and saturation
-        uninterp = d3.scale.linear().domain(extent).range([0,1]),
-        interp   = d3.interpolateHsl('hsl(30,100%,88%)', 'hsl(30,25%,25%)');
-        color    = function(x){return interp(uninterp(x))};
-
-    var words = set.map(function(d){
-        return {text: d.RAW, size: fontSize(+d.PWD_FREQUENCY),
-        		color: color(+d.PWD_FREQUENCY),
-                value: +d.PWD_FREQUENCY};
-    });
-
-    var w = width('wordle'), h = height('wordle');
-    
-    plotWords([], true); //reset wordle
-    
-    d3.layout.cloud().size([w, h])
-        .words(words)
-        .timeInterval(2)
-        .padding(50)
-        .font('Trebuchet MS')
-        .rotate(function() { return /*~~(Math.random() * 2) * 90*/0; })
-        .fontSize(function(d) { return d.size; })
-        .color(function(d){return d.color;})
-        .value(function(d){return d.value;})
-        .on("word", function(d){plotWords([d], false)}) // plots words incrementally
-        //.on('end')
-        .start();
-}
-
-/**
- * Plots a collection of words on the screen
- * @param words collection of words
- * @param scratch if true, clear the previous words before
- * plotting. Otherwise, plot over the existent words. 
- */
-function plotWords(words, scratch){
-	if (scratch==null) scratch = true;
-    var w = width('wordle'), h = height('wordle');
-
-    // append svg only if necessary
-    d3.select('#wordle').selectAll('svg')
-        .data([null])
-        .enter().append('svg')
-        .attr('class', 'Greys')
-        .attr('width', w)
-        .attr('height', h)
-        .append('g')
-        .attr('transform', 'translate('+w/2+','+h/2+')')
-        .append('text')
-        .attr('class','hover');
-
-    svg = d3.select('#wordle').selectAll('svg').select('g');
-
-    var setter = function(sel){
-        sel.style("font-size", function(d) { return d.size + "px"; })
-           .attr("text-anchor", "middle")
-           .attr("transform", function(d) {
-               return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-           })
-           //.attr('class', function(d){return d.color;})
-           .attr('fill', function(d){return d.color;})
-           .text(function(d) { return d.text; })
-           .on('mouseover', function(d){
-        	   var c = d3.hsl(d3.select(this).attr('fill'));
-        	   var hl = c.l > 0.5 ? c.darker() : c.brighter();
-        	   d3.select(this)
-        	     .attr('fill', hl.toString())
-        	     .attr('original_color', c.toString())
-        	     .attr('cursor','hand');
-            })
-            .on('mouseout', function(d){
-        	   var c = d3.select(this).attr('original_color');
-        	   d3.select(this)
-        	     .attr('fill', c)
-        	     .attr('originalColor', null);
-            })
-           .append('title')
-           .text(function(d){return d.value;});
-    }
-
-    var words = scratch ? words : svg.selectAll('text').data().concat(words);
-    
-    var bound = svg.selectAll('text').data(words);
-    bound.exit().remove();
-    bound.enter().append("text");
-
-    svg.selectAll('text').call(setter);
-}
 
 /**
  * Draws a radial representation for years.
@@ -455,8 +352,6 @@ function align(c1, c2){
     c1.attr('cy', d3.select(c2).attr('cy'));
 }
 
-function width(el) { return document.getElementById(el).clientWidth;  }
-function height(el){ return document.getElementById(el).clientHeight; }
 
 function monthPath(t0) {
     var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0),

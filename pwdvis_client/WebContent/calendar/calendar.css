@@ -92,3 +92,8 @@
     font-family: 'Trebuchet MS';
     /*font-weight: bold;*/
 }
+
+.filtered-out{
+	font-size: 20px;
+	fill: black;
+}
