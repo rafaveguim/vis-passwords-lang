@@ -5,17 +5,72 @@ var binWidth = 150, binHeight,
     cloudWidth, cloudHeight;
 
 // the function for font size being last used
-var fFontSize;
+var fFontSize, layout,
+    percent = d3.format('%');
 
-var passwords;
+// the raw dataset and two derived subsets
+var passwords   = new Array(), 
+    withLetters = new Array(), 
+    onlyNumbers = new Array(),
+    inUse       = passwords; // the dataset currently in use
 
-window.addEventListener("load", wordleMetrics, false);
+// numbers of words to appear in the cloud
+var threshold = 100;
+
+window.addEventListener("load", initialize, false);
+
+function initialize(){
+	wordleMetrics();
+	layout = d3.layout.cloud()
+	           .size([cloudWidth, cloudHeight])
+	           .timeInterval(1)
+	           .font('Trebuchet MS')
+	           .rotate(0);
+	configureDistributionBar();
+}
+
+function configureDistributionBar(){
+        var hover = function(d){
+            var width = d3.select(this).style('width'),
+                left  = d3.select(this).style('left');
+            d3.select('#distrib_hover')
+		    .style('width', width)
+		    .style('left', left);
+        }
+
+	d3.select('#letters')
+	  .on('click', function(d){
+	      //hover(d);
+		  inUse = withLetters;
+		  drawWordle(dataToVisual(inUse.slice(0,threshold)));
+		  
+	  })
+	  .on('mouseover', hover)
+	  .on('mouseout', d3.select('#distrib_hover').style('width',0));
+	
+	d3.select('#noletters')
+	  .on('click', function(d){
+	      //hover(d);
+		  inUse = onlyNumbers;
+		  drawWordle(dataToVisual(inUse.slice(0,threshold)));
+	  })
+	  .on('mouseover', hover)
+	  .on('mouseout', d3.select('#distrib_hover').style('width',0));
+	  
+	  d3.selectAll('#distrib_hover')
+	    .on('click', function(){
+	        d3.select(this).style('width',0);
+	        inUse = passwords;
+                drawWordle(dataToVisual(inUse.slice(0,threshold)));
+	    });
+	  
+}
 
 function wordleMetrics(){
 	w = width('wordle');
 	binHeight = h = height('wordle');
 	cloudWidth = w - binWidth;
-	cloudHeight = h;
+	cloudHeight = h - height('distrib');
 }
 
 /**
@@ -41,36 +96,99 @@ function fontSizeFunction(domain){
 	return fFontSize.range([15,80]).domain(domain);
 }
 
+
+/**
+ * Returns the proportion of passwords that don't contain
+ * letters or other symbols in a particular dataset.
+ * @param pwds an array of objects that stores the passwords
+ * as the attribute 'RAW' and their frequency as 'PWD_FREQUENCY'
+ */
+function onlyNumbersRatio(pwds){
+	var total = 0, onlyNumbers = 0;
+	
+	pwds.forEach(function(p){
+		if (p.RAW.match(/\D/)==null)	
+			onlyNumbers += +p.PWD_FREQUENCY;
+		total += +p.PWD_FREQUENCY;
+	});
+	
+	return onlyNumbers/total;
+}
+
+
+function setData(dates){
+	passwords.length = 0;
+	var newData = d3.merge(dates.map(function(d){ return tree[year(d)][d] }))
+	                .filter(function(d){return d!=null})
+	                .sort(function(a,b){return +b.PWD_FREQUENCY - +a.PWD_FREQUENCY});
+
+	// that's for not loosing a possible reference from 'inUse' to 'passwords'
+	newData.forEach(function(d){passwords.push(d)});
+	withLetters.length = onlyNumbers.length = 0;
+	passwords.forEach(function(p){
+		if (p.RAW.match(/\D/)==null)	onlyNumbers.push(p);
+		                        else	withLetters.push(p);
+	});
+}
+
 /**
  * Draws Wordle
  * @param dates array of dates
  * @param fFont d3 scale function that determines the font size,
  * e.g., d3.scale.log()
  */
-function drawWordle(dates, fFontSize){
+function wordle(dates, fFontSize){
 	this.fFontSize = fFontSize;
-    this.passwords = d3.merge(dates.map(function(d){ return tree[year(d)][d] }));
-    passwords = passwords.filter(function(d){return d!=null});
-
-    passwords.sort(function(a,b){return +b.PWD_FREQUENCY - +a.PWD_FREQUENCY});
-    var subset = passwords.splice(0,300);
+	setData(dates);
+	
+    var onlyNumbers = onlyNumbersRatio(passwords); // count it before splicing
     
-    var extent = d3.extent(subset.map(function(d){return +d.PWD_FREQUENCY;})),
-    	color = colorFunction(extent),
-    	fontSize = fontSizeFunction(extent);
-    
-    var subset = subset.map(function(d){
-        return {text: d.RAW, size: fontSize(+d.PWD_FREQUENCY),
-        		color: color(+d.PWD_FREQUENCY),
-                value: +d.PWD_FREQUENCY};
-    });
+    drawWordle(dataToVisual(inUse.slice(0,threshold)));
+    updateDistributionBar(onlyNumbers);
+}
 
-    plotWords([], true); //reset cloud
+function dataToVisual(data){
+    var extent   = d3.extent(data.map(function(d){return +d.PWD_FREQUENCY;})),
+	    color    = colorFunction(extent),
+	    fontSize = fontSizeFunction(extent);
+
+	return data.map(function(d){
+		return {text: d.RAW, size: fontSize(+d.PWD_FREQUENCY),
+    		color: color(+d.PWD_FREQUENCY),
+            value: +d.PWD_FREQUENCY};
+	});
+}
+
+/**
+ * Draws wordle
+ * @param words array of objects containing the following
+ * attributes: text, size, color, and value.
+ */
+function drawWordle(words){
+	plotWords([], true); //reset cloud
     // reset "filtered out" region
     getFilteredTexts().data([]).exit().remove();
     
-    var callback = function(d){plotWords([d], false)};
-    layoutCloud(subset, callback, true);
+    var onWord = function(d){plotWords([d], false)},
+        onEnd = function(d){plotWords(d, true)};
+    
+    layoutCloud(words, onWord, onEnd);
+}
+
+/**
+ * Updates distribution bar
+ * @param onlyNumbers proportion of only-number
+ * passwords, 0-1.
+ */
+function updateDistributionBar(onlyNumbers){
+	d3.select('#letters')
+	  .datum(1-onlyNumbers)
+      .style('width', percent)
+      .style('left', function(d){return percent(1-d)});
+    d3.select('#noletters')
+      .datum(onlyNumbers)
+      .style('width', percent)
+      .style('left', 0);
 }
 
 /**
@@ -85,7 +203,7 @@ function plotWords(words, scratch){
     // append svg only if necessary
     d3.select('#wordle').selectAll('svg')
         .data([null])
-        .enter().append('svg')
+        .enter().insert('svg', '#distrib')
         .attr('class', 'Greys')
         .attr('width', w)
         .attr('height', h)
@@ -95,7 +213,7 @@ function plotWords(words, scratch){
         .append('text')
         .attr('class','hover');
 
-    svg = d3.select('#wordle').selectAll('svg').select('g');
+    svg = d3.select('#wordle').select('svg').select('g');
 
     var words = scratch ? words : svg.selectAll('text').data().concat(words);
     
@@ -131,17 +249,16 @@ function filterOut(d){
 		    .on('mouseout',function(){d3.select(this).style('fill', null)})
 		    .on('click', backToCloud);
 		  
-		 d3.select(this).remove();
+		 d3.select(this).style('display', 'none');
 		 
-		 // adding a word to replace the one we just removed
-		 if ( (newcomer = passwords.shift()) != null){
-			 var inside = d3.select('g.cloud').selectAll('text').data();
-			 inside.push({text: newcomer.RAW, value: +newcomer.PWD_FREQUENCY});
-			 d3.select('g.cloud').selectAll('text')
-			   .data(inside)
-			   .enter()
-			   .append('text')
-			   .call(cloudSetter);
+		 var cloudData = getCloudTexts().data();
+		 // adding a word to replace the one we just made 'disabled'
+		 if ( (newcomer = inUse[cloudData.length]) != null){
+			 cloudData.push({text: newcomer.RAW, value: +newcomer.PWD_FREQUENCY});
+			 getCloudTexts().data(cloudData)
+							   .enter()
+							   .append('text')
+							   .call(cloudSetter);
 		 }
 		 
 		 updateCloud();
@@ -162,28 +279,26 @@ function filterOut(d){
  * @param o data associated with the text element
  */
 function backToCloud(o){
-	// add this password back to the cloud
-	var cloudData = d3.select('g.cloud').selectAll('text').data();
-	cloudData.push(o);
-	d3.select('g.cloud')
-	  .selectAll('text')
-	  .data(cloudData)
-	  .enter()
-	  .append('text')
-	  .call(cloudSetter);
 	// removes it from the filtered out region 
 	d3.select(this).remove();
-	// updates filtered out region (y-position)
-	getFilteredText().attr('y', function(d,i){return (i+1)*22;});
-	// updates cloud
-	updateCloud();
+	// add this password back to the cloud
+	getCloudTexts().filter(function(d){return d==o})
+	               .transition()
+	               .style('font-size', '40px')
+	               .style('display', null)
+	               .attr('transform', 'translate('+[0,0]+')')
+	               .each('end', function(){
+	                	// updates filtered out region (y-position)
+                        	getFilteredTexts().attr('y', function(d,i){return (i+1)*22;});
+                        	// updates cloud
+                        	updateCloud();
+	               });
+
 }
 
 function updateCloud(){
-	data = d3.select('g.cloud')
-	  		 .selectAll('text')
-	  		 .data();
-	
+	data = getCloudTexts().filter(function(d){return d3.select(this).style('display')!='none'})
+	                      .data();
 	var extent = d3.extent(data.map(function(d){return d.value})),
 	    color = colorFunction(extent),
 	    fontSize = fontSizeFunction(extent);
@@ -193,7 +308,7 @@ function updateCloud(){
     		color: color(d.value), value: d.value};
 		});
 
-	var callback = function (newWords) {
+	var onEnd = function (newWords) {
 		var updated = d3.nest()
 		                .key(function(d){return d.text})
 		                .rollup(function(array){return array[0]})
@@ -211,6 +326,7 @@ function updateCloud(){
 		d3.select('g.cloud').selectAll('text')
 		.filter(function(d){return updated[d.text]!=null})
 		  .transition()
+		  .style('text-anchor', 'middle')
 		  .duration(function(d){return duration(d.value)})
 		  .style("font-size", function(d) { return updated[d.text].size + "px"; })
 		  .attr("transform", function(d) {
@@ -219,21 +335,23 @@ function updateCloud(){
           })
           .attr('fill', function(d){ return updated[d.text].color; });
 		
-		// returns the set resulting from subtracting (newWords - words)
-		var diff = newWords.filter(function(d){
-			return !words.some(function(k){return k.text==d.text})
-		})
-		
-		// including the words that don't appear before
-		var data = d3.select('g.cloud').selectAll('text').data().concat(diff);
-		d3.select('g.cloud').selectAll('text')
-		  .data(data)
-		  .enter()
-		  .append('text')
-		  .call(cloudSetter)
+//		// returns the set resulting from subtracting (newWords - words)
+//		var diff = newWords.filter(function(d){
+//			return !words.some(function(k){return k.text==d.text})
+//		})
+//		
+//		// including the words that don't appear before
+//		var data = d3.select('g.cloud').selectAll('text').data().concat(diff);
+//		d3.select('g.cloud').selectAll('text')
+//		  .data(data)
+//		  .enter()
+//		  .append('text')
+//		  .call(cloudSetter)
+//		  
+//		console.log(diff);
 	}
 	
-	layoutCloud(words, callback, false);
+	layoutCloud(words, null, onEnd);
 }
 
 function cloudSetter(sel){
@@ -241,9 +359,9 @@ function cloudSetter(sel){
        .attr("text-anchor", "middle")
        .attr("transform", function(d) {
     	   // prevents the words to be drawn outside the drawing region
-    	   return !d.x || !d.y || d.x>cloudWidth/2 || d.y>cloudHeight/2 
-    	   || d.x<-cloudWidth/2 || d.y<-cloudHeight/2 
+    	   return (d.x>cloudWidth/2 || d.y>cloudHeight/2 || d.x<-cloudWidth/2 || d.y<-cloudHeight/2)
     	   ? "translate(-10000,-10000)" : "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+
        })
        .attr('fill', function(d){return d.color!=null ? d.color : null;})
        .text(function(d) { return d.text; })
@@ -266,20 +384,21 @@ function cloudSetter(sel){
        .text(function(d){return d.value;});
 }
 
-function layoutCloud(words, callback, incremental){
-	 d3.layout.cloud().size([cloudWidth, cloudHeight])
-	     .words(words)
-	     .timeInterval(1)
-	     .font('Trebuchet MS')
-	     .rotate(0)
-	     .fontSize(function(d) { return d.size; })
-	     .color(function(d){return d.color;})
-	     .value(function(d){return d.value;})
-	     .on("word", function(d){ if (incremental) callback(d)}) // plots words incrementally
-	     .on("end", function(d){ if (!incremental) callback(d)}) // plots words incrementally
-	     .start();
+function layoutCloud(words, onWord, onEnd){
+	layout.stop();
+    layout.words(words)
+	      .fontSize(function(d) { return d.size; })
+	      .color(function(d){return d.color;})
+	      .value(function(d){return d.value;})
+	      .on("word", function(d){if (onWord) onWord(d)})
+	      .on("end", function(d){if (onEnd) onEnd(d)}) 
+	      .start();
 }
 
 function getFilteredTexts(){
 	return d3.select('#wordle').select('svg').selectAll('text.filtered-out');
+}
+
+function getCloudTexts(){
+	return d3.select('#wordle').select('svg').select('g.cloud').selectAll('text');
 }

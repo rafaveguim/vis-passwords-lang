@@ -48,7 +48,7 @@ function start(){
 function drawWordleForYears(years){
 	years = years.map(function(d){return +d});
 	dates = d3.merge(years.map(function(y){return d3.time.days(new Date(y++,0,1), new Date(y,0,1));}))
-	drawWordle(dates, d3.scale.log());
+	wordle(dates, d3.scale.log());
 }
 
 
@@ -277,7 +277,7 @@ function drawAggregateCalendar(years){
         	var dates = d3.keys(tree)
         				  .filter(function(d){return years.indexOf(+d)!=-1;})
         				  .map(function(y){return fullFormat.parse(y+'-'+mmdd);});
-        	drawWordle(dates, d3.scale.linear());
+        	wordle(dates, d3.scale.linear());
         })
         .append('title')
         .text(function(d) { return d + ": " + freq[d]; });
@@ -325,7 +325,7 @@ function drawCalendar(year){
         .attr("x", function(d) { return week(d) * cellSize; })
         .attr("y", function(d) { return day(d) * cellSize; })
         .on('click', function(d){
-            drawWordle([d], d3.scale.log());
+            wordle([d], d3.scale.log());
         });
 
     rect.append("title")
