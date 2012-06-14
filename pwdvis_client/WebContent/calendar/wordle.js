@@ -30,40 +30,43 @@ function initialize(){
 }
 
 function configureDistributionBar(){
-        var hover = function(d){
-            var width = d3.select(this).style('width'),
-                left  = d3.select(this).style('left');
-            d3.select('#distrib_hover')
-		    .style('width', width)
-		    .style('left', left);
-        }
+    var copyPosition = function(from, to){
+        to.style('width', from.style('width'))
+		  .style('left', from.style('left'));
+    };
+    
+    var hover  = function(){ copyPosition(d3.select(this), d3.select('#distrib_hover'))};
+    var select = function(this_){ copyPosition(d3.select(this_), d3.select('#distrib_select'))};
+    
+    var unHover  = function(){d3.select('#distrib_hover').style('width',0)};
+    var unSelect = function(){d3.select('#distrib_select').style('width',0)};
 
 	d3.select('#letters')
 	  .on('click', function(d){
-	      //hover(d);
+		  select(this);
 		  inUse = withLetters;
 		  drawWordle(dataToVisual(inUse.slice(0,threshold)));
 		  
 	  })
 	  .on('mouseover', hover)
-	  .on('mouseout', d3.select('#distrib_hover').style('width',0));
+	  .on('mouseout', unHover);
 	
 	d3.select('#noletters')
 	  .on('click', function(d){
-	      //hover(d);
+		  select(this);
 		  inUse = onlyNumbers;
 		  drawWordle(dataToVisual(inUse.slice(0,threshold)));
 	  })
 	  .on('mouseover', hover)
-	  .on('mouseout', d3.select('#distrib_hover').style('width',0));
+	  .on('mouseout', unHover);
 	  
-	  d3.selectAll('#distrib_hover')
-	    .on('click', function(){
-	        d3.select(this).style('width',0);
-	        inUse = passwords;
-                drawWordle(dataToVisual(inUse.slice(0,threshold)));
-	    });
-	  
+    d3.selectAll('#distrib_select')
+      .on('click', function(){
+        unSelect();
+        inUse = passwords;
+        drawWordle(dataToVisual(inUse.slice(0,threshold)));
+    });  
+	
 }
 
 function wordleMetrics(){
@@ -402,3 +405,4 @@ function getFilteredTexts(){
 function getCloudTexts(){
 	return d3.select('#wordle').select('svg').select('g.cloud').selectAll('text');
 }
+

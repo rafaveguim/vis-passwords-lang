@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="88f6ba91-bd98-4f56-aae1-e9014f70b447" name="Default" comment="">
+    <list default="true" id="88f6ba91-bd98-4f56-aae1-e9014f70b447" name="Default" comment="Drawing labels around the radial calendar. But they still don't look good. Need to rotate/translate.">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pwdvis_client/WebContent/data.js" afterPath="$PROJECT_DIR$/pwdvis_client/WebContent/data.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.css" afterPath="$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.html" afterPath="$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pwdvis_client/WebContent/calendar/wordle.js" afterPath="$PROJECT_DIR$/pwdvis_client/WebContent/calendar/wordle.js" />
     </list>
     <ignored path="pwdvis.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -24,117 +26,53 @@
     <favorites_list name="pwdvis" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.46070787">
-      <split-first>
-        <leaf>
-          <file leaf-file-name="calendar.html" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.html">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="18" column="17" selection-start="496" selection-end="496" vertical-scroll-proportion="-11.769231">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="calendar.js" pinned="false" current="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.js">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="91" column="24" selection-start="2690" selection-end="2690" vertical-scroll-proportion="0.32692307">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="data.js" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/data.js">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="28" column="62" selection-start="1096" selection-end="1096" vertical-scroll-proportion="0.0">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="colorbrewer.css" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/colorbrewer.css">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="data.js" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/data.js">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="13" column="0" selection-start="243" selection-end="243" vertical-scroll-proportion="0.0">
-                  <folding>
-                    <element signature="n#!!doc;n#yearRange#0" expanded="false" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="calendar.csv" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.csv">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="0" column="22" selection-start="22" selection-end="31" vertical-scroll-proportion="0.0">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="calendar.css" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.css">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="15" column="0" selection-start="184" selection-end="184" vertical-scroll-proportion="0.0">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-first>
-      <split-second>
-        <leaf>
-          <file leaf-file-name="calendar.html" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.html">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="24" column="7" selection-start="528" selection-end="528" vertical-scroll-proportion="-15.692307">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="pc.html" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/pc.html">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="9" column="25" selection-start="344" selection-end="344" vertical-scroll-proportion="-5.8846154">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="engine.js" pinned="false" current="true" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/engine.js">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="32" column="45" selection-start="736" selection-end="736" vertical-scroll-proportion="0.13934426">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="mapping.js" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/mapping.js">
-              <provider selected="true" editor-type-id="text-editor">
-                <state line="30" column="46" selection-start="937" selection-end="937" vertical-scroll-proportion="0.0">
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-        </leaf>
-      </split-second>
-    </splitter>
+    <leaf>
+      <file leaf-file-name="calendar.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="25" column="0" selection-start="806" selection-end="806" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="calendar.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="121" column="0" selection-start="3599" selection-end="3599" vertical-scroll-proportion="0.016983017">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="d3.layout.cloud.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/d3.layout.cloud.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="22" column="18" selection-start="761" selection-end="761" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="calendar.css" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="57" column="1" selection-start="673" selection-end="673" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="colorbrewer.css" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/colorbrewer.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="726" column="33" selection-start="25541" selection-end="25541" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -142,6 +80,11 @@
     </FindUsagesManager>
   </component>
   <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="rafaveguim" />
+      </list>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
@@ -149,11 +92,12 @@
       <list>
         <option value="$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.csv" />
         <option value="$PROJECT_DIR$/pwdvis_client/WebContent/calendar/data.js" />
-        <option value="$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.css" />
-        <option value="$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.html" />
-        <option value="$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.js" />
         <option value="$PROJECT_DIR$/pwdvis_client/WebContent/data.js" />
         <option value="$PROJECT_DIR$/pwdvis_client/WebContent/engine.js" />
+        <option value="$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.html" />
+        <option value="$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.css" />
+        <option value="$PROJECT_DIR$/pwdvis_client/WebContent/calendar/d3.layout.cloud.js" />
+        <option value="$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.js" />
       </list>
     </option>
   </component>
@@ -285,7 +229,16 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -304,9 +257,14 @@
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth3" value="687" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth2" value="69" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth1" value="68" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder2" value="2" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder3" value="3" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Rafa\git\pwdvis\pwdvis_client\WebContent\calendar" />
+    </key>
   </component>
   <component name="RunManager" selected="JavaScript Debug.calendar.js">
     <configuration default="false" name="calendar.js" type="JavascriptDebugSession" factoryName="Local" temporary="true">
@@ -318,23 +276,26 @@
       <ConfigurationWrapper RunnerId="JavascriptDebugRunner" />
       <method />
     </configuration>
+    <configuration default="true" type="NodeJSConfigurationType" factoryName="Node JS" working-dir="$PROJECT_DIR$" coffeescript-run="false">
+      <method />
+    </configuration>
     <configuration default="true" type="JavascriptDebugSession" factoryName="Local">
       <JSDebuggerConfigurationSettings>
-        <option name="engineId" />
+        <option name="engineId" value="embedded" />
         <option name="fileUrl" />
       </JSDebuggerConfigurationSettings>
       <method />
     </configuration>
     <configuration default="false" name="calendar.html" type="JavascriptDebugSession" factoryName="Local">
       <JSDebuggerConfigurationSettings>
-        <option name="engineId" />
+        <option name="engineId" value="embedded" />
         <option name="fileUrl" value="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.html" />
       </JSDebuggerConfigurationSettings>
       <method />
     </configuration>
     <list size="2">
-      <item index="0" class="java.lang.String" itemvalue="JavaScript Debug.calendar.html" />
-      <item index="1" class="java.lang.String" itemvalue="JavaScript Debug.calendar.js" />
+      <item index="0" class="java.lang.String" itemvalue="JavaScript Debug.calendar.js" />
+      <item index="1" class="java.lang.String" itemvalue="JavaScript Debug.calendar.html" />
     </list>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
@@ -358,32 +319,83 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
+      <changelist id="88f6ba91-bd98-4f56-aae1-e9014f70b447" name="Default" comment="" />
       <created>1334782048547</created>
       <updated>1334782048547</updated>
     </task>
+    <task id="LOCAL-00001" summary="Replaced the absolute frequencies' axis by the relative ones.">
+      <created>1334952827379</created>
+      <updated>1334952827379</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Just testing..">
+      <created>1334953141586</created>
+      <updated>1334953141586</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Drawing labels around the radial calendar. But they still don't look good. Need to rotate/translate.">
+      <created>1336774521580</created>
+      <updated>1336774521580</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Added overall view and updated to the most recent dataset (including raw passwords). Started to modify the layout to make it more robust/flexible.">
+      <created>1337036344410</created>
+      <updated>1337036344410</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Added Wordle and did a lot of refactoring.">
+      <created>1337184958848</created>
+      <updated>1337184958848</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Included Wordle layout by Jason Davies.">
+      <created>1337185031630</created>
+      <updated>1337185031630</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Modified d3.layout.cloud.js for better information flow. Put color on wordle and tooltips showing frequency,">
+      <created>1337201706416</created>
+      <updated>1337201706416</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
+  </component>
+  <component name="TodoView" selected-index="0">
+    <todo-panel id="selected-file">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
+    <todo-panel id="default-changelist">
+      <are-packages-shown value="false" />
+      <are-modules-shown value="false" />
+      <flatten-packages value="false" />
+      <is-autoscroll-to-source value="false" />
+    </todo-panel>
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1186" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3294347" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.12124407" sideWeight="0.6705653" order="1" side_tool="false" content_ui="combo" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39961013" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32921347" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.19438203" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.12124407" sideWeight="0.32748538" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1444386" sideWeight="0.80506825" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3988764" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="JsTestDriver Server" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32903865" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="JsTestDriver Server" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32921347" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32846004" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19493178" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32921347" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="VcsContentAnnotationSettings">
@@ -423,7 +435,7 @@
     <option name="SHOW_VCS_ERROR_NOTIFICATIONS" value="true" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" />
+    <option name="LAST_COMMIT_MESSAGE" value="Modified d3.layout.cloud.js for better information flow. Put color on wordle and tooltips showing frequency," />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -436,93 +448,86 @@
     <option name="UPDATE_GROUP_BY_CHANGELIST" value="false" />
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
+    <MESSAGE value="Replaced the absolute frequencies' axis by the relative ones." />
+    <MESSAGE value="Just testing.." />
+    <MESSAGE value="Drawing labels around the radial calendar. But they still don't look good. Need to rotate/translate." />
+    <MESSAGE value="Added overall view and updated to the most recent dataset (including raw passwords). Started to modify the layout to make it more robust/flexible." />
+    <MESSAGE value="Wordle added and a lot of refactoring." />
+    <MESSAGE value="Added Wordle and did a lot of refactoring." />
+    <MESSAGE value="Included Wordle layout by Jason Davies." />
+    <MESSAGE value="Modified d3.layout.cloud.js for better information flow. Put color on wordle and tooltips showing frequency," />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/word_measures_top.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="39" selection-start="874070" selection-end="874070" vertical-scroll-proportion="0.22830579" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/pc.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="25" selection-start="344" selection-end="344" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/mapping.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="46" selection-start="937" selection-end="937" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.csv">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="22" selection-start="22" selection-end="31" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="0" column="22" selection-start="22" selection-end="31" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/data.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="28" column="62" selection-start="1096" selection-end="1096" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/data.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="0" selection-start="243" selection-end="243" vertical-scroll-proportion="0.26153848" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/engine.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="21" selection-start="372" selection-end="372" vertical-scroll-proportion="0.20029455" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/d3/d3.v2.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="2046" column="0" selection-start="55708" selection-end="55708" vertical-scroll-proportion="0.0">
+        <state line="105" column="3" selection-start="2722" selection-end="2722" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="25" column="0" selection-start="806" selection-end="806" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/d3.layout.cloud.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="22" column="18" selection-start="761" selection-end="761" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="57" column="1" selection-start="673" selection-end="673" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/colorbrewer.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="0" selection-start="184" selection-end="184" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/word_measures_top.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="39" selection-start="874070" selection-end="874070" vertical-scroll-proportion="0.22830579">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/data.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="0" selection-start="243" selection-end="243" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="n#!!doc;n#yearRange#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/mapping.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="46" selection-start="937" selection-end="937" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="7" selection-start="528" selection-end="528" vertical-scroll-proportion="-15.692307">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/data.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="62" selection-start="1096" selection-end="1096" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="726" column="33" selection-start="25541" selection-end="25541" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/calendar/calendar.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="91" column="24" selection-start="2690" selection-end="2690" vertical-scroll-proportion="0.32692307">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/pc.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="25" selection-start="344" selection-end="344" vertical-scroll-proportion="-5.8846154">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pwdvis_client/WebContent/engine.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="45" selection-start="736" selection-end="736" vertical-scroll-proportion="0.13934426">
+        <state line="121" column="0" selection-start="3599" selection-end="3599" vertical-scroll-proportion="0.016983017">
           <folding />
         </state>
       </provider>

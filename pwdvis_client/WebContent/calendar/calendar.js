@@ -230,17 +230,18 @@ function drawBall(){
  * draws the calendar aggregating all the years available.
  */
 function drawAggregateCalendar(years){
-	if (years==null) // if no years informed, consider them all
-		years = d3.keys(tree).map(function(d){return +d});
-		
-	var freq = d3.nest()
-		  .key(function(entry){return entry.key})
-		  .rollup(function(d){ 
-			  var dates = d[0].value;
-			  dates = dates.filter(function(date){return years.indexOf(+date.YEAR)!=-1})
-		      return d3.sum(dates.map(function(e){ return +e.PWD_FREQUENCY}))
-		    })
-		  .map(d3.entries(daysOfYear));
+    var freq = {};
+    if (years==null){ // if no years informed, consider them all
+        years = d3.keys(tree).map(function(d){return +d});
+        d3.keys(daysOfYear).forEach(function(k){
+        	freq[k] = d3.sum(daysOfYear[k].map(function(e){ return +e.PWD_FREQUENCY}));
+        });
+    } else {
+        d3.keys(daysOfYear).forEach(function(k){
+            var dates = daysOfYear[k].filter(function(date){return years.indexOf(+date.YEAR)!=-1});	        
+            freq[k] = d3.sum(dates.map(function(e){ return +e.PWD_FREQUENCY}));
+        });	
+    }
 	
     var w  = width('chart'), h = height('chart'),
         year = 1967,
@@ -256,7 +257,7 @@ function drawAggregateCalendar(years){
                 .attr("class", "YlGnBu")
                 .append("g")
                 .attr("transform", "translate(" + margin.left + ","
-                + (margin.top + (h - cellSize * 7) / 2) + ")");
+                + ((h - cellSize * 7) / 2) + ")");
 
     svg.append("text")
         .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
@@ -309,7 +310,7 @@ function drawCalendar(year){
             .attr("class", "YlGnBu")
             .append("g")
             .attr("transform", "translate(" + margin.left + ","
-            + (margin.top + (h - cellSize * 7) / 2) + ")");
+            + ((h - cellSize * 7) / 2) + ")");
 
     svg.append("text")
         .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
@@ -446,4 +447,11 @@ function nestByDate(rows){
     return d3.nest()
         .key(function(d){return new Date(d.YEAR,d.MONTH-1,d.DAY);})
         .map(rows);
+}
+
+function filter(){
+	var key = document.getElementById("searchbox").value;
+	var regex = buildRegex(key);
+	
+	
 }
