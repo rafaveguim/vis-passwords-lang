@@ -159,11 +159,32 @@ function drawBall(){
             .attr('r',7);
 }
 
+function reloadBall(){
+	var years = yearsFreq();
+	
+	var color = d3.scale.quantile()
+			    .domain(d3.values(years))
+			    .range(d3.range(9));
+	
+	var data = d3.select("#ball")
+				 .selectAll('circle.year')
+				 .data();
+	data.forEach(function(d){d.freq = years[d.year]});
+	
+	d3.select("#ball")
+	  .selectAll('circle.year')
+	  .attr("class", function(d) { return "q" + color(d.freq) + "-9"; });
+	  
+}
+
 /**
  * Returns a map with the frequency of every years.
  * Takes into consideration the filter stack.
  */
 function yearsFreq(){
+	// if there's no filter, call the old, fast function
+	if (filterStack.length==0) return oldYearsFreq();
+	
 	var years = {};
     d3.keys(tree).forEach(function(k){
     	var pwds = d3.merge(d3.values(tree[k]));
@@ -174,6 +195,23 @@ function yearsFreq(){
     });
     return years;
 }
+
+/**
+ * This function doesn't account for filters,
+ * so it's way faster. This is mainly because it
+ * doesn't count at password level, but at date level.
+ */
+function oldYearsFreq(){
+	var years = {};
+	d3.keys(tree).forEach(function(k){
+	    years[k] = d3.sum(d3.values(tree[k]).map(function(u){
+	        return +u[0].DATE_FREQUENCY;
+	    }))
+	});
+	return years;
+}
+
+
 
 // computes radius for an orbit o
 function radius(o){return o*17+17;};

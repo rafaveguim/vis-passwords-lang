@@ -279,15 +279,16 @@ function nestByDate(rows){
         .map(rows);
 }
 
-
 /**
  * Adds a new filter to the filter stack based on user input.
  */
 function newFilter(){
-	var key = document.getElementById("searchbox").value;
+	if (event.keyCode != 13) return;
+	
+	var key = document.getElementById("pattern_input").value;
 	var regex = buildRegex(key);
 	
-	filterStack.push(function(d){ return d.RAW.match(regex)!=null });
+	filterStack.push(function(d){ return d.RAW.match(regex)==null });
 
 	updateViews();
 }
@@ -296,6 +297,6 @@ function newFilter(){
  * Reload views. Usually called after a filter is inserted or removed.
  */
 function updateViews(){
-	
+	reloadBall();
 }
 
