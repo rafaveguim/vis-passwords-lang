@@ -22,6 +22,8 @@ var tree, daysOfYear;
 // an array with filtering functions
 var filterStack = [];
 
+var color; // color function for calendar view
+
 window.addEventListener("load", start, false);
 
 function start(){
@@ -54,28 +56,22 @@ function drawWordleForYears(years){
 	wordle(dates, d3.scale.log());
 }
 
+
 /**
  * Draws an aggregate calendar corresponding to a range of years.
  * @param range array like [min, max], inclusive. If not informed,
  * draws the calendar aggregating all the years available.
  */
 function drawAggregateCalendar(years){
-    var freq = {};
-    if (years==null){ // if no years informed, consider them all
+	var freq = freqByDayOfYear(years);
+	
+    if (years==null) // if no years informed, consider them all
         years = d3.keys(tree).map(function(d){return +d});
-        d3.keys(daysOfYear).forEach(function(k){
-        	freq[k] = d3.sum(daysOfYear[k].map(function(e){ return +e.PWD_FREQUENCY}));
-        });
-    } else {
-        d3.keys(daysOfYear).forEach(function(k){
-            var dates = daysOfYear[k].filter(function(date){return years.indexOf(+date.YEAR)!=-1});	        
-            freq[k] = d3.sum(dates.map(function(e){ return +e.PWD_FREQUENCY}));
-        });	
-    }
+    
 	
     var w  = width('chart'), h = height('chart'),
-        year = 1967,
-        color = d3.scale.quantile()
+        year = 1967;
+    color = d3.scale.quantile()
                 .domain(d3.values(freq))
                 .range(d3.range(9));
 
@@ -92,6 +88,7 @@ function drawAggregateCalendar(years){
     svg.append("text")
         .attr("transform", "translate(-6," + cellSize * 3.5 + ")rotate(-90)")
         .attr("text-anchor", "middle")
+        .classed('legend', true)
         .text(years[0]+" to "+years[years.length-1]);
     
     var rect = svg.selectAll("rect.day")
@@ -121,12 +118,9 @@ function drawAggregateCalendar(years){
 }
 
 function drawCalendar(year){
-    var dates = {};
-    d3.keys(tree[year]).forEach(function(d){
-        dates[new Date(d)] = +d3.values(tree[year][d])[0].DATE_FREQUENCY;
-    });
+    var dates = freqByDate(year);
 
-    var color = d3.scale.log()
+    color = d3.scale.log()
         .domain(d3.extent(d3.values(dates)))
         .range([0,8]);
 
@@ -244,33 +238,44 @@ function decades_(years){
     return dec;
 }
 
-function freqByDayOfYear(rows){
-    return d3.nest()
-        .key(function(d){return mmddFormat(new Date(d.YEAR, d.MONTH-1, d.DAY));})
-        .rollup(function(d){
-            return d3.sum(d.map(function(e){
-                return +e.PWD_FREQUENCY;
-            }));
-        })
-        .map(rows);
+/**
+ * Returns the frequency distribution of days of year.
+ * If all years are desired, the parameter should be passed as null,
+ * so that the function chooses a faster algorithm to compute distribution
+ * (without filtering years).
+ * 
+ * @param years array of years, or null for all
+ * @return a map of the form {08-05: 524, ...}, where there
+ * are 524 occurrences for May 8.
+ */
+function freqByDayOfYear(years){
+	var freq = {};
+    if (years==null){ // if no years informed, consider them all
+        d3.keys(daysOfYear).forEach(function(k){
+        	var filtered = filter(daysOfYear[k], filterStack);
+        	freq[k] = d3.sum(filtered.map(function(e){ return +e.PWD_FREQUENCY}));
+        });
+    } else {
+        d3.keys(daysOfYear).forEach(function(k){
+        	// filtering by year
+            var dates = daysOfYear[k].filter(function(date){return years.indexOf(+date.YEAR)!=-1});
+            // filtering by patterns defined by user
+            dates = filter(dates, filterStack);
+            // building the frequency distribution
+            freq[k] = d3.sum(dates.map(function(e){ return +e.PWD_FREQUENCY}));
+        });	
+    }
+	return freq;
 }
 
-function freqByYear(rows){
-    return d3.nest()
-        .key(function(d){return d.YEAR;})
-        .rollup(function(d){
-            return d3.sum(d.map(function(e){
-                return +e.PWD_FREQUENCY;
-            }));
-        })
-        .map(rows);
-}
-
-function freqByDate(rows){
-    return d3.nest()
-        .key(function(d){return new Date(d.YEAR,d.MONTH-1,d.DAY);})
-        .rollup(function(d){return +d[0].DATE_FREQUENCY;})
-        .map(rows);
+function freqByDate(year){
+	var freq = {};
+	d3.entries(tree[year]).forEach(function(entry){
+	        var date = entry.key, pwds = entry.value;
+		pwds = filter(pwds, filterStack);
+		freq[date] = d3.sum(pwds.map(function(p){return +p.PWD_FREQUENCY}));
+    });
+	return freq;
 }
 
 function nestByDate(rows){
@@ -282,7 +287,7 @@ function nestByDate(rows){
 /**
  * Adds a new filter to the filter stack based on user input.
  */
-function newFilter(){
+function updateFilters(){
 	if (event.keyCode != 13) return;
 	
 	var key = document.getElementById("pattern_input").value;
@@ -298,5 +303,46 @@ function newFilter(){
  */
 function updateViews(){
 	reloadBall();
+	reloadCalendar();
+	reloadWordle();
 }
 
+function reloadCalendar(){
+	// recover the year range info
+	var reg = /\b\d+\b/g; // regex captures numeric sequences
+	 legend = d3.select('#chart')
+				   .select('text.legend')
+				   .text();
+	var years = legend.match(reg).map(toNumber);
+	if (years.length==2) years = d3.range(years[0], years[1]+1);
+	
+	var freq = freqByDayOfYear(years);
+	
+	d3.select('#chart')
+	  .selectAll("rect.day")
+	  .attr("class", function(d) { return "day q" + Math.round(color(freq[d])) + "-9"; });
+	
+}
+
+
+// Obsolete function, from the time we kept the rows.
+// Nesting rows all the time is too slow.
+// It's a pretty function, though.
+/*function freqByDayOfYear(rows){
+    return d3.nest()
+        .key(function(d){return mmddFormat(new Date(d.YEAR, d.MONTH-1, d.DAY));})
+        .rollup(function(d){
+            return d3.sum(d.map(function(e){
+                return +e.PWD_FREQUENCY;
+            }));
+        })
+        .map(rows);
+}*/
+
+// Same situation as function above
+/*function freqByDate(rows){
+return d3.nest()
+    .key(function(d){return new Date(d.YEAR,d.MONTH-1,d.DAY);})
+    .rollup(function(d){return +d[0].DATE_FREQUENCY;})
+    .map(rows);
+}*/

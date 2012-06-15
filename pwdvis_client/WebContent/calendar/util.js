@@ -30,3 +30,20 @@ function buildRegex(pattern) {
     
     return new RegExp(reg.join(''));
 }
+
+/**
+ * Given an array of filtering functions,
+ * apply them all against an array of passwords and
+ * returns the resulting array.
+ * @param pwds array of passwords (data rows)
+ * @param filterStack array of functions
+ * 
+ */
+function filter(pwds, filterStack){
+	filterStack.forEach(function(f){pwds = pwds.filter(f)});
+	return pwds;
+}
+
+function toNumber(d){
+	return +d;
+}

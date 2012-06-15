@@ -121,8 +121,10 @@ function onlyNumbersRatio(pwds){
 
 function setData(dates){
 	passwords.length = 0;
-	var newData = d3.merge(dates.map(function(d){ return tree[year(d)][d] }))
-	                .filter(function(d){return d!=null})
+	var newData = d3.merge(dates.map(function(d){ return tree[year(d)][d] }));
+	// filtering and sorting
+	newData = filter(newData, filterStack)
+				.filter(function(d){return d!=null})
 	                .sort(function(a,b){return +b.PWD_FREQUENCY - +a.PWD_FREQUENCY});
 
 	// that's for not loosing a possible reference from 'inUse' to 'passwords'
@@ -385,6 +387,23 @@ function cloudSetter(sel){
        .on('click', filterOut)
        .append('title')
        .text(function(d){return d.value;});
+}
+
+function reloadWordle(){
+	
+	var backPasswords = filter(passwords, filterStack),
+		backWithLetters= filter(withLetters, filterStack),
+	    backOnlyNumbers = filter(onlyNumbers, filterStack);
+	
+		passwords.length = 0;
+		withLetters.length = 0;
+		onlyNumbers.length = 0;
+		
+	    backPasswords.forEach(function(d){passwords.push(d)});
+	    backWithLetters.forEach(function(d){withLetters.push(d)});
+	    backOnlyNumbers.forEach(function(d){onlyNumbers.push(d)});
+	    
+	drawWordle(inUse);
 }
 
 function layoutCloud(words, onWord, onEnd){

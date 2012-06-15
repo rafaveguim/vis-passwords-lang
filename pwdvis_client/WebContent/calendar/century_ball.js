@@ -188,7 +188,7 @@ function yearsFreq(){
 	var years = {};
     d3.keys(tree).forEach(function(k){
     	var pwds = d3.merge(d3.values(tree[k]));
-    	filterStack.forEach(function(f){pwds = pwds.filter(f)});
+    	pwds = filter(pwds, filterStack);
     	var sum = 0;
     	pwds.forEach(function(p){sum += +p.PWD_FREQUENCY});
         years[k] = sum;
