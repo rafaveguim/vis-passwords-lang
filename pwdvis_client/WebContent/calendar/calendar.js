@@ -19,6 +19,9 @@ var day     = d3.time.format("%w"),
 
 var tree, daysOfYear;
 
+// an array with filtering functions
+var filterStack;
+
 window.addEventListener("load", start, false);
 
 function start(){
@@ -449,9 +452,23 @@ function nestByDate(rows){
         .map(rows);
 }
 
-function filter(){
+
+/**
+ * Adds a new filter to the filter stack based on user input.
+ */
+function newFilter(){
 	var key = document.getElementById("searchbox").value;
 	var regex = buildRegex(key);
 	
+	filterStack.push(function(d){ return d.RAW.match(regex)!=null });
+
+	updateViews();
+}
+
+/**
+ * Reload views. Usually called after a filter is inserted or removed.
+ */
+function updateViews(){
 	
 }
+
