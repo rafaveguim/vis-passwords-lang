@@ -260,7 +260,7 @@ function freqByDayOfYear(years){
         	// filtering by year
             var dates = daysOfYear[k].filter(function(date){return years.indexOf(+date.YEAR)!=-1});
             // filtering by patterns defined by user
-            dates = filter(dates, filterStack);
+            filter(dates, filterStack);
             // building the frequency distribution
             freq[k] = d3.sum(dates.map(function(e){ return +e.PWD_FREQUENCY}));
         });	
@@ -272,8 +272,8 @@ function freqByDate(year){
 	var freq = {};
 	d3.entries(tree[year]).forEach(function(entry){
 	        var date = entry.key, pwds = entry.value;
-		pwds = filter(pwds, filterStack);
-		freq[date] = d3.sum(pwds.map(function(p){return +p.PWD_FREQUENCY}));
+		    filter(pwds, filterStack);
+		    freq[date] = d3.sum(pwds.map(function(p){return +p.PWD_FREQUENCY}));
     });
 	return freq;
 }
@@ -290,11 +290,15 @@ function nestByDate(rows){
 function updateFilters(){
 	if (event.keyCode != 13) return;
 	
-	var key = document.getElementById("pattern_input").value;
-	var regex = buildRegex(key);
+	var keys = document.getElementById("pattern_input").value;
+	keys = keys.replace(' ', '');
+	keys = keys.split(',');
 	
-	filterStack.push(function(d){ return d.RAW.match(regex)==null });
-
+	keys.forEach(function(key){
+		var regex = buildRegex(key);
+		filterStack.push(function(d){ return d.RAW.match(regex)==null });
+	})
+	
 	updateViews();
 }
 
@@ -320,6 +324,7 @@ function reloadCalendar(){
 	
 	d3.select('#chart')
 	  .selectAll("rect.day")
+	  .transition()
 	  .attr("class", function(d) { return "day q" + Math.round(color(freq[d])) + "-9"; });
 	
 }

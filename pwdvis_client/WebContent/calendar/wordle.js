@@ -390,20 +390,11 @@ function cloudSetter(sel){
 }
 
 function reloadWordle(){
+	filter(passwords, filterStack),
+	filter(withLetters, filterStack),
+	filter(onlyNumbers, filterStack);
 	
-	var backPasswords = filter(passwords, filterStack),
-		backWithLetters= filter(withLetters, filterStack),
-	    backOnlyNumbers = filter(onlyNumbers, filterStack);
-	
-		passwords.length = 0;
-		withLetters.length = 0;
-		onlyNumbers.length = 0;
-		
-	    backPasswords.forEach(function(d){passwords.push(d)});
-	    backWithLetters.forEach(function(d){withLetters.push(d)});
-	    backOnlyNumbers.forEach(function(d){onlyNumbers.push(d)});
-	    
-	drawWordle(inUse);
+	drawWordle(dataToVisual(inUse.slice(0, threshold)));
 }
 
 function layoutCloud(words, onWord, onEnd){
