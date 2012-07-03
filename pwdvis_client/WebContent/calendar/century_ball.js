@@ -178,7 +178,7 @@ function reloadBall(){
 }
 
 /**
- * Returns a map with the frequency of every years.
+ * Returns a map with the frequency of every year.
  * Takes into consideration the filter stack.
  */
 function yearsFreq(){

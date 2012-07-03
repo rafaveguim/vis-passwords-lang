@@ -27,7 +27,7 @@ var color; // color function for calendar view
 window.addEventListener("load", start, false);
 
 function start(){
-    d3.csv('calendar_huge.csv', function(rows){
+    d3.csv('calendar.csv', function(rows){
         // calendar metrics
         cellSize = (width('chart') - margin.right - margin.left)/53;
 
@@ -312,7 +312,7 @@ function updateViews(){
 }
 
 function reloadCalendar(){
-	// recover the year range info
+	// recover the year range info from the label!! =D
 	var reg = /\b\d+\b/g; // regex captures numeric sequences
 	 legend = d3.select('#chart')
 				   .select('text.legend')
