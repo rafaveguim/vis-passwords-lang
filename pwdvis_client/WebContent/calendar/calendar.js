@@ -312,7 +312,7 @@ function updateViews(){
 }
 
 function reloadCalendar(){
-	// recover the year range info
+	// recover the year range info from the label!! =D
 	var reg = /\b\d+\b/g; // regex captures numeric sequences
 	 legend = d3.select('#chart')
 				   .select('text.legend')
