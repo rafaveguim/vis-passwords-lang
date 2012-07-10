@@ -13,6 +13,9 @@ function drawBall(){
     var color = d3.scale.quantile()
         .domain(d3.values(years))
         .range(d3.range(9));
+//	var color = d3.scale.linear()
+//        .domain(d3.extent(d3.values(years)))
+//        .range([0,9]);
 
     var svg = d3.select("#ball").append("svg")
                 .attr("width", w)
@@ -30,6 +33,10 @@ function drawBall(){
             clearDim();
             drawAggregateCalendar();
             drawWordleForYears(d3.keys(tree));
+            crossDecadeSelection.attr('x1', null)
+					.attr('y1', null)
+					.attr('x2', null)
+					.attr('y2', null);
         });
 
     // everything is drawn in this shifted g
@@ -67,14 +74,22 @@ function drawBall(){
     	   var years = d3.range(i*10+1900, i*10+1910);
     	   drawAggregateCalendar(years);
     	   drawWordleForYears(years);
+    	   crossDecadeSelection.attr('x1', null)
+			.attr('y1', null)
+			.attr('x2', null)
+			.attr('y2', null);
        });
     
     var ringSelected = svg.select('g.ring')
                           .append('circle')
-                          .attr('class', 'selection decade_selection'),
+                          .attr('class', 'selection aggregate_selection'),
         ringHover = svg.select('g.ring')
 				       .append('circle')
 				       .attr('class', 'hover decade_hover')
+				       .style('pointer-events', 'none'),
+		crossDecadeSelection = svg.select('g.ring')
+				       .append('line')
+				       .attr('class', 'selection aggregate_selection')
 				       .style('pointer-events', 'none');
 
     // appending 'internal labels' (1940s, 1990s..)
@@ -88,7 +103,7 @@ function drawBall(){
     		+ 'translate(0,3)'
     		+ 'translate(0,'+ radius(i) +') ';})
     	.attr('text-anchor', 'middle');
-
+    
     // 'external labels' (1, 2, 3... 10)
     svg.append("g")
         .selectAll('text')
@@ -103,7 +118,6 @@ function drawBall(){
 	    	return y + d3.select(this).style('font-size').replace(/\D+/,'')/2;
 	     })
 	    .text(String)
-	    .attr('cursor', 'hand')
 	    .on('click', function(d){
 	    	var years = svg.selectAll('circle.year')
 		    	   .classed('dimmed', true)
@@ -113,6 +127,10 @@ function drawBall(){
 		    	   .classed('unclickable', false)
 		    	   .data()
 		    	   .map(function(d){return +d.year});
+	    	crossDecadeSelection.attr('x1', function(){return radialX(0,d);})
+	    						.attr('y1', function(){return radialY(0,d);})
+	    						.attr('x2', function(){return radialX(decades.length-1,d);})
+	    						.attr('y2', function(){return radialY(decades.length-1,d);});
 		    drawAggregateCalendar(years);
 	    	ringSelected.style('display', 'none');
 	    	drawWordleForYears(years);
@@ -140,7 +158,7 @@ function drawBall(){
         .attr("cx", function(d,i){ return radius(d.decade)*Math.cos(angle(i)); })
         .attr("cy", function(d,i){ return radius(d.decade)*Math.sin(angle(i)); })
         .attr("r", 4)
-        .attr("class", function(d) { return "q" + color(d.freq) + "-9"; })
+        .attr("class", function(d) { return "q" + Math.round(color(d.freq)) + "-9"; })
         .classed("year", true)
         .on("click", function(d){
             drawCalendar(d.year);
@@ -211,7 +229,8 @@ function oldYearsFreq(){
 	return years;
 }
 
-
+function radialX(ringIndex, elementIndex){return radius(ringIndex)*Math.cos(angle(elementIndex));}
+function radialY(ringIndex, elementIndex){return radius(ringIndex)*Math.sin(angle(elementIndex));}
 
 // computes radius for an orbit o
 function radius(o){return o*17+17;};

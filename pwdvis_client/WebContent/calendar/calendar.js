@@ -27,7 +27,7 @@ var color; // color function for calendar view
 window.addEventListener("load", start, false);
 
 function start(){
-    d3.csv('calendar_huge.csv', function(rows){
+    d3.csv('calendar.csv', function(rows){
         // calendar metrics
         cellSize = (width('chart') - margin.right - margin.left)/53;
 

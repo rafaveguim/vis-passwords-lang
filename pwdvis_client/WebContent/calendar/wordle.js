@@ -246,7 +246,6 @@ function filterOut(d){
 		  getFilteredTexts().data(out).enter().append('text')
 		    .classed('filtered-out', true);
 		  getFilteredTexts().attr('text-anchor', 'start')
-		    .style('cursor', 'hand')
 		    .attr('x', binOffset)
 		    .attr('y', function(d,i){return (i+1)*22;})
 		    .text(function(d){return d.text;})
@@ -375,8 +374,7 @@ function cloudSetter(sel){
     	   var hl = c.l > 0.5 ? c.darker() : c.brighter();
     	   d3.select(this)
     	     .attr('fill', hl.toString())
-    	     .attr('original_color', c.toString())
-    	     .attr('cursor','hand');
+    	     .attr('original_color', c.toString());
         })
         .on('mouseout', function(d){
     	   var c = d3.select(this).attr('original_color');

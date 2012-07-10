@@ -22,6 +22,7 @@
     font-size: 9pt;
     font-style: italic;
     fill: gray;
+    cursor: pointer;
 }
 
 .internal_label {
@@ -66,7 +67,7 @@
     fill: none;
 }
 
-.decade_selection {
+.aggregate_selection {
     stroke-width: 1;
     fill: none;
 }
@@ -90,6 +91,7 @@
 
 #wordle text{
     font-family: 'Trebuchet MS';
+    cursor: pointer;
     /*font-weight: bold;*/
 }
 
