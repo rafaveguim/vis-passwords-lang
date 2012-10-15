@@ -108,7 +108,7 @@ function drawAggregateCalendar(years){
         	wordle(dates, d3.scale.linear());
         })
         .append('title')
-        .text(function(d) { return d + ": " + freq[d]; });
+        .text(function(d) { return d + ": " + freq[d].toFixed(1); });
 
     svg.selectAll("path.month")
         .data(function() { return d3.time.months(new Date(year, 0, 1), new Date(year + 1, 0, 1)); })
@@ -165,7 +165,7 @@ function drawCalendar(year){
     rect.filter(function(d) { return d in dates; })
         .attr("class", function(d) { return "day q" + Math.round(color(dates[d])) + "-9"; })
         .select('title')
-        .text(function(d) { return fullFormat(d) + ": " + dates[d]; });
+        .text(function(d) { return fullFormat(d) + ": " + dates[d].toFixed(1); });
 }
 
 /**

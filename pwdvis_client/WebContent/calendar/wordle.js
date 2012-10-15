@@ -126,9 +126,12 @@ function setData(dates){
 	newData = filter(newData, filterStack)
 				.filter(function(d){return d!=null})
 	                .sort(function(a,b){return +b.PWD_FREQUENCY - +a.PWD_FREQUENCY});
-
+	
 	// that's for not loosing a possible reference from 'inUse' to 'passwords'
-	newData.forEach(function(d){passwords.push(d)});
+	newData.forEach(function(d,i){
+		// assuming it's sorted, avoids repeated entries 
+		if (newData[i-1]!=null && newData[i-1].RAW!=d.RAW) passwords.push(d); 
+	});
 	withLetters.length = onlyNumbers.length = 0;
 	passwords.forEach(function(p){
 		if (p.RAW.match(/\D/)==null)	onlyNumbers.push(p);
