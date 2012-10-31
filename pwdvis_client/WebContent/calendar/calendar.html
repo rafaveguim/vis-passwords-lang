@@ -13,14 +13,16 @@
     <link rel="stylesheet" href="calendar.css">
 </head>
 
-<body style="width: 100%; height: 100%;">
+<body style="width: 100%; height: 100%; margin: 0;">
 
 	<div id='measure_text' class='internal_label'>1990's</div>
-	
+
+    <div id="app" style="float: left;">
+
 	<!--<div id="patternbar">
         <input size="50" type="search" id="pattern_input" onkeyup="updateFilters()"/>
     </div> -->
-	
+
     <div id="chart" style="width: 922px; height: 160px; background: #ffffff">
     </div>
 
@@ -40,10 +42,25 @@
 			</div>
 		</div>
 
-		
-
 	</div>
 
+    </div>
+
+    <div id="summary" style="padding-right: 40px;">
+        <h1>Visualizing Semantics in Passwords</h1>
+        <h2>The Role of Dates</h2>
+        <h3>by Rafael Veras, Julie Thorpe and Christopher Collins</h3>
+        <a>http://vialab.science.uoit.ca/dates</a>
+        <p class="description"> We begin an investigation into the semantic patterns underlying user choice in passwords.
+            Understanding semantic patterns provides insight into how people choose passwords, which in turn can
+            be used to inform usable password policies and password guidelines.
+            As semantic patterns are difficult to recognize automatically, we turn to visualization to aid in their discovery.
+            We focus on dates in passwords, designing an interactive visualization for their detailed analysis, and using it to explore the RockYou dataset of over 32 million passwords.  Our visualization
+            enabled us to analyze the dataset in many dimensions, including the relationship between dates and their co-occurring text.
+            We use our observations from the visualization to guide further analysis, leading to our findings
+            that nearly 5\% of passwords in the RockYou dataset represent pure dates (either purely numerical or mixed alphanumeric
+            representations) and the presence of many patterns within the dates that people choose (such as repetition, the first days of the month, recent years, and holidays). </p>
+    </div>
 </body>
 
 </html>

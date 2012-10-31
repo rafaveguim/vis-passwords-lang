@@ -1,3 +1,38 @@
+@font-face {
+    font-family: "Fabrica";
+    src: local("Fabrica"), url("Fabrica.otf"), format("opentype");
+}
+
+html{
+    height: 100%;
+}
+
+p.description {
+    font-family: Helvetica;
+    color: #323232;
+    font-size: 10pt;
+}
+
+h1 {
+    font-family: Code Bold;
+    font-size: 32pt;
+    margin-bottom: 0;
+}
+
+h2 {
+    font-family: Code Light;
+    font-size: 18pt;
+    margin-top: 0;
+    color: #969696;
+}
+
+h3 {
+    font-family: Fabrica;
+    color: #282828;
+    font-size: 12pt;
+    font-weight: normal;
+}
+
 #chart {
     font: 10px sans-serif;
     shape-rendering: crispEdges;
