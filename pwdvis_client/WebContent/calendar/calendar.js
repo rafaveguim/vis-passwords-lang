@@ -28,6 +28,7 @@ window.addEventListener("load", start, false);
 
 function start(){
     d3.csv('calendar.csv', function(rows){
+        console.log('loaded calendar.csv');
         // calendar metrics
         cellSize = (width('chart') - margin.right - margin.left)/53;
 
@@ -42,6 +43,7 @@ function start(){
         drawBall();
         
         drawWordleForYears(d3.keys(tree));
+        console.log('finished processing');
     })
 }
 
@@ -102,6 +104,7 @@ function drawAggregateCalendar(years){
         .datum(function(d){return mmddFormat(d);})
         .attr("class", function(mmdd) { return "day q" + color(freq[mmdd]) + "-9"; })
         .on('click', function(mmdd){
+            selectDay(d3.select(this));
         	var dates = d3.keys(tree)
         				  .filter(function(d){return years.indexOf(+d)!=-1;})
         				  .map(function(y){return fullFormat.parse(y+'-'+mmdd);});
@@ -150,6 +153,7 @@ function drawCalendar(year){
         .attr("x", function(d) { return week(d) * cellSize; })
         .attr("y", function(d) { return day(d) * cellSize; })
         .on('click', function(d){
+            selectDay(d3.select(this));
             wordle([d], d3.scale.log());
         });
 
@@ -166,6 +170,25 @@ function drawCalendar(year){
         .attr("class", function(d) { return "day q" + Math.round(color(dates[d])) + "-9"; })
         .select('title')
         .text(function(d) { return fullFormat(d) + ": " + dates[d].toFixed(1); });
+}
+
+/**
+ * Highlights the rectangle corresponding to a day.
+ * @param sel a d3 selection of the rect
+ */
+function selectDay(sel){
+    var hl = d3.select('rect.selection');
+    if (hl.empty())
+        hl = d3.select('#chart')
+            .select('svg')
+            .select('g')
+            .append('rect')
+            .classed('selection', true);
+
+    hl.attr('x', sel.attr('x'))
+        .attr('y', sel.attr('y'))
+        .attr('width', cellSize)
+        .attr('height', cellSize);
 }
 
 /**

@@ -15,15 +15,19 @@
 
 <body style="width: 100%; height: 100%; margin: 0;">
 
-	<div id='measure_text' class='internal_label'>1990's</div>
+    <div id="app">
 
-    <div id="app" style="float: left;">
-
+    <div class="loader">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>​
+    <!--<div id="loading"></div> -->
 	<!--<div id="patternbar">
         <input size="50" type="search" id="pattern_input" onkeyup="updateFilters()"/>
     </div> -->
 
-    <div id="chart" style="width: 922px; height: 160px; background: #ffffff">
+    <div id="chart" style="width: 922px; height: 160px">
     </div>
 
     <div id="ball" style="width: 455px; height: 450px; float: left;">
@@ -46,11 +50,11 @@
 
     </div>
 
-    <div id="summary" style="padding-right: 40px;">
+    <div id="summary">
         <h1>Visualizing Semantics in Passwords</h1>
         <h2>The Role of Dates</h2>
-        <h3>by Rafael Veras, Julie Thorpe and Christopher Collins</h3>
-        <a>http://vialab.science.uoit.ca/dates</a>
+        <h3>Rafael Veras, Julie Thorpe and Christopher Collins</h3>
+        <a href="http://vialab.science.uoit.ca/dates">http://vialab.science.uoit.ca/dates</a>
         <p class="description"> We begin an investigation into the semantic patterns underlying user choice in passwords.
             Understanding semantic patterns provides insight into how people choose passwords, which in turn can
             be used to inform usable password policies and password guidelines.
@@ -60,6 +64,7 @@
             We use our observations from the visualization to guide further analysis, leading to our findings
             that nearly 5\% of passwords in the RockYou dataset represent pure dates (either purely numerical or mixed alphanumeric
             representations) and the presence of many patterns within the dates that people choose (such as repetition, the first days of the month, recent years, and holidays). </p>
+        <img src="uoit_logo_small.PNG" style="height: 150px;"/>
     </div>
 </body>
 
