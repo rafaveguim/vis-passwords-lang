@@ -44,26 +44,43 @@ html {
     width: 100%;
 }
 
+#help_button {
+   text-align: center;
+   font-family: Arial;
+}
+
+#loading{
+    display: table;
+    height: 100%;
+    float: left;
+    width: 1155px;
+    position: absolute;
+    font-family: Helvetica;
+    font-size: 20pt;
+    font-weight: bold;
+    color: rgb(100,100,100);
+}
+
+#cell {
+    display:table-cell;
+    vertical-align:middle;
+    text-align: center;
+}
+
 #app{
     background-color: rgb(253,253,253);
-    height: 100%;
+    /*height: 100%;*/
     float: left;
     width: 1155px;
 }
 
-#loading {
+/*#loading {
     width: 100px;
     height: 100px;
-    background-image: url('loading.gif');
     position: absolute;
     float: left;
     left: 527.5px
-}
-
-#chart {
-    margin-left: 115px;
-    margin-bottom: 30px;
-}
+}*/
 
 #summary {
     width: 380px;
@@ -75,6 +92,21 @@ html {
     position: absolute;
     /*float: left;*/
     left: 1155px;
+}
+
+#help_panel {
+    width: 1155px;
+    height: 100%;
+    position: absolute;
+    z-index: 500;
+    background-color: rgba(150, 150, 150, 0.8);
+    display: none;
+    text-align: center;
+    line-height: 700px;
+}
+
+.help_image{
+    vertical-align: middle;
 }
 
 a {
@@ -91,9 +123,13 @@ a:hover {
     /*text-shadow: 1px 1px 1px rgba(0,0,0,.4);*/
 }
 
+a.help:hover {
+    color: #FF7000;
+}
+
 p.description {
     font-family: Helvetica;
-    color: #323232;
+    color: #3A0000;
     font-size: 10pt;
 }
 
@@ -120,6 +156,9 @@ h3 {
 #chart {
     font: 10px sans-serif;
     shape-rendering: crispEdges;
+    margin-left: 20px;
+    margin-bottom: 30px;
+    float: left;
 }
 
 .unclickable{

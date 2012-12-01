@@ -1,0 +1,134 @@
+svg {
+    font: 10px sans-serif;
+}
+html, body {
+    height: 100%;
+    margin: 0;
+    width: 100%;
+}
+.background path {
+    fill: none;
+    shape-rendering: crispedges;
+    stroke: rgb(245,245,245);
+    stroke-opacity: 0.2;
+}
+.foreground path {
+    fill: none;
+    stroke-opacity: 0.4;
+}
+.brush .extent {
+    fill-opacity: 0.3;
+    shape-rendering: crispedges;
+    stroke: #FFFFFF;
+}
+.axis line, .axis path {
+    fill: none;
+    shape-rendering: crispedges;
+    stroke: #000000;
+}
+.axis text {
+    cursor: move;
+    text-shadow: 0 1px 0 #FFFFFF;
+}
+.tooltip{
+	font-family: arial;
+	position: absolute;
+	top: -800px;
+	z-index: 10;
+}
+
+.tooltip_value {
+    background-color: rgba(255, 255, 171, 0.7);
+    border: 1px solid #333333;
+    font-size: 8pt;
+    padding: 1px 2px;
+}
+.tooltip_pk, .tooltip_selected {
+    background-color: rgba(253, 110, 138, 0.9);
+    border: 2px solid #FD6E8A;
+    border-radius: 3px 3px 3px 3px;
+    color: white;
+    font-size: 13pt;
+    font-weight: bold;
+    padding: 3px 4px;
+}
+.tooltip_selected {
+    background-color: rgba(110,63,252, 0.8);
+    border-color: rgb(83,48,204);
+}
+.highlight {
+    fill: none;
+    stroke: rgb(253, 110, 138);
+    stroke-width: 3;
+}
+.selected {
+    fill: none;
+    stroke: rgb(110,63,252);
+    stroke-width: 3;
+}
+#left_panel {
+    display: inline;
+    float: left;
+    height: 100%;
+    width: 15%;
+}
+#stage_wrapper {
+    display: inline;
+    float: right;
+    height: 100%;
+    width: 85%;
+}
+
+#leftPanel ol li {
+    font-size: 12pt;
+}
+.pwd_bar {
+    background-color: rgba(135, 206, 235, 0.3);
+    height: 100%;
+    position: relative;
+    z-index: 10;
+}
+
+.pwd_bar_hl {
+	background-color: rgba(253,110,138,0.3);
+}
+
+.pwd_wrapper {
+    height: 25px;
+    margin: 2px 10px 0;
+    font-family: helvetica;
+    font-size: 11pt;
+    font-weight: bold;
+}
+.pwd_label {
+    color: #1B3245;
+    height: 20px;
+    margin: 0 0 0 5px;
+    position: relative;
+    top: -20px;
+    z-index: 1000;
+}
+
+.pwd_label_hl {
+	color: #9C0220;
+}
+
+#pwd_list {
+    margin-top: 25px;
+}
+
+#bottom_toolbar{
+	padding-bottom: 25px;
+	text-align: right;
+	padding-right: 35px;
+}
+
+#searchbox{
+	margin: 0;
+	height: 25px;
+ 	-webkit-appearance: none;
+ 	padding-left: 25px;
+  	background: url(images/search_icon.gif) no-repeat 2px;
+  	border: solid 1px rgb(200,200,200); 
+	/*border-style: inherit;*/
+}

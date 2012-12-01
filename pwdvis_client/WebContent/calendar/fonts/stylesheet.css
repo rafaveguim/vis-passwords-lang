@@ -3,7 +3,7 @@
 
 
 @font-face {
-    font-family: 'Fabrica';
+    font-family: 'fabricaregular';
     src: url('fabrica-webfont.eot');
     src: url('fabrica-webfont.eot?#iefix') format('embedded-opentype'),
          url('fabrica-webfont.woff') format('woff'),
@@ -18,7 +18,7 @@
 
 
 @font-face {
-    font-family: 'Code Bold';
+    font-family: 'code_boldregular';
     src: url('code_bold-webfont.eot');
     src: url('code_bold-webfont.eot?#iefix') format('embedded-opentype'),
          url('code_bold-webfont.woff') format('woff'),
@@ -33,7 +33,7 @@
 
 
 @font-face {
-    font-family: 'Code Light';
+    font-family: 'code_lightregular';
     src: url('code_light-webfont.eot');
     src: url('code_light-webfont.eot?#iefix') format('embedded-opentype'),
          url('code_light-webfont.woff') format('woff'),

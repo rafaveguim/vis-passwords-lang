@@ -16,7 +16,6 @@ var day     = d3.time.format("%w"),
     fullFormat  = d3.time.format("%Y-%m-%d"),
     mmddFormat  = d3.time.format("%m-%d");
 
-
 var tree, daysOfYear;
 
 // an array with filtering functions
@@ -27,23 +26,29 @@ var color; // color function for calendar view
 window.addEventListener("load", start, false);
 
 function start(){
+
     d3.csv('calendar.csv', function(rows){
-        console.log('loaded calendar.csv');
         // calendar metrics
         cellSize = (width('chart') - margin.right - margin.left)/53;
 
         daysOfYear = d3.nest()
-		    .key(function(d){return mmddFormat(new Date(d.YEAR, d.MONTH-1, d.DAY));})
-		    .map(rows);
+            .key(function(d){return mmddFormat(new Date(d.YEAR, d.MONTH-1, d.DAY));})
+            .map(rows);
         tree = d3.nest().key(function(d){return +d.YEAR;})
-		        .key(function(d){return new Date(d.YEAR,d.MONTH-1,d.DAY);})
-		        .map(rows);
+            .key(function(d){return new Date(d.YEAR,d.MONTH-1,d.DAY);})
+            .map(rows);
 
         drawAggregateCalendar();
         drawBall();
-        
+
+        /*in the beginning those elements are not displayed for aesthetic reasons*/
+        d3.select('#distrib').style('display', null);
+        d3.select('#help_button').style('display', null);
+
         drawWordleForYears(d3.keys(tree));
-        console.log('finished processing');
+
+        d3.select('#loading').style('display', 'none');
+
     })
 }
 
