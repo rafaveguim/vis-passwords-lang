@@ -109,6 +109,14 @@ html {
     vertical-align: middle;
 }
 
+.no_top_margin {
+ margin-top: 0px;
+}
+
+.no_bottom_margin {
+    margin-bottom: 0px;
+}
+
 a {
     color: #282828;
     font-family: Helvetica;
@@ -127,10 +135,17 @@ a.help:hover {
     color: #FF7000;
 }
 
-p.description {
+p.description, p.copyright{
     font-family: Helvetica;
     color: #3A0000;
     font-size: 10pt;
+}
+
+p.copyright {
+    font-size: 8pt;
+    font-style: italic;
+    color: rgb(30,30,30);
+    line-height: 100%;
 }
 
 h1 {
