@@ -293,14 +293,14 @@ rect.selection {
 #distrib_hover{
     background: #FFD600;
     position: absolute;
-    z-index: 50;
+    z-index: 5;
     pointer-events: none;
 }
 
 #distrib_select{
     background: orange;
     position: absolute;
-    z-index: 50;
+    z-index: 5;
 }
 
 #distrib .bar{
