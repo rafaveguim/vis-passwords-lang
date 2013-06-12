@@ -45,7 +45,7 @@ function configureDistributionBar(){
 	  .on('click', function(d){
 		  select(this);
 		  inUse = withLetters;
-		  drawWordle(dataToVisual(inUse.slice(0,threshold)));
+		  drawWordle(dataToVisual(topUnique(inUse, threshold)));
 		  
 	  })
 	  .on('mouseover', hover)
@@ -55,7 +55,7 @@ function configureDistributionBar(){
 	  .on('click', function(d){
 		  select(this);
 		  inUse = onlyNumbers;
-		  drawWordle(dataToVisual(inUse.slice(0,threshold)));
+		  drawWordle(dataToVisual(topUnique(inUse, threshold)));
 	  })
 	  .on('mouseover', hover)
 	  .on('mouseout', unHover);
@@ -64,7 +64,7 @@ function configureDistributionBar(){
       .on('click', function(){
         unSelect();
         inUse = passwords;
-        drawWordle(dataToVisual(inUse.slice(0,threshold)));
+		drawWordle(dataToVisual(topUnique(inUse, threshold)));
     });  
 	
 }
@@ -140,6 +140,25 @@ function setData(dates){
 }
 
 /**
+ * Returns the first N unique elements from a collection.
+ */
+function topUnique(list, n){
+    var top = {},
+        counter = 0;
+
+    for (var i=0; i<list.length; i++){
+        var d = list[i];
+        if (!top.hasOwnProperty(d.RAW)){
+            top[d.RAW] = d;
+            if (++counter == n)
+                break;
+        }
+    }
+
+    return d3.values(top);
+}
+
+/**
  * Draws Wordle
  * @param dates array of dates
  * @param fFont d3 scale function that determines the font size,
@@ -151,7 +170,7 @@ function wordle(dates, fFontSize){
 	
     var onlyNumbers = onlyNumbersRatio(passwords); // count it before splicing
     
-    drawWordle(dataToVisual(inUse.slice(0,threshold)));
+    drawWordle(dataToVisual(topUnique(inUse, threshold)));
     updateDistributionBar(onlyNumbers);
 }
 
