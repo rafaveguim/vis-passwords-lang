@@ -13,12 +13,13 @@ var hPwd	  	 = "Password",
 	hRankFRel 	 = "Relative Frequency Difference Ranking",
 	hRankG2   	 = "Difference Ranking",
 	hG2		  	 = "G2",
-    hAbsFreqBnc  = "Frequency - BNC",
-    hAbsFreqPwd  = "Frequency - Passwords",
+    hAbsFreqBnc  = "Absolute frequency - BNC",
+    hAbsFreqPwd  = "Absolute frequency - Passwords",
+    hId          = "Id",
 	
 	// dimensions that shouldn't be included as axes
 	noAxisDimensions = [hWord, hCoOccur, hWordId, 
-	                    hRelFreq, hAbsFreqBnc, hAbsFreqPwd, hRankFRel],
+	                    hRelFreq, hAbsFreqBnc, hAbsFreqPwd, hRankFRel, hId],
 	
 	// dimensions that should have axes with linear scales
 	linearDimensions = [hRankG2],
