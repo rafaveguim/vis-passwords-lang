@@ -20,7 +20,8 @@ var line 		= d3.svg.line(),
 	tooltip_selected,
 	color,
 	brushed,
-	searched;
+	searched,
+	axisYOffset; // y position of the axes, useful for placement of labels
 
 
 window.addEventListener("load", start, false);
@@ -84,6 +85,18 @@ window.addEventListener("load", start, false);
 						.map(pwdsCsv);
 					});
 
+			d3.select("body")
+				.on("keydown", function(){
+					if (d3.event.keyCode == 27){  // escape key
+						// reset selection
+						isSelected = false;
+						selected.attr("d", null);
+						// updatePwdList(d["Word"], true);
+						tooltip_selected.style("top", null)
+							.text(null);
+					}
+				});
+
 		  // Add the tooltips
 		  tooltips =  d3.select("body")
 				  		.selectAll("div.tooltip_value")
@@ -112,9 +125,14 @@ window.addEventListener("load", start, false);
 					      .on("mouseover", highlighting)
 					      .style("stroke", color);
 
+			axisYOffset = d3.select("g.foreground")
+				.node()
+				.getBoundingClientRect()
+				.top;
+
 		  tpSelecTop = function(d){
 							var dim = dimensions[0];
-							return y[dim](d[dim]) + "px";
+							return axisYOffset + y[dim](d[dim]) + "px";
 						};
 
 		  highlight = svg.append("svg:polyline")
@@ -127,7 +145,7 @@ window.addEventListener("load", start, false);
 						    	tooltip_selected.style("top",tpSelecTop(d))
 						    	  					.text(d["Word"]);
 						    })
-						    .on("mouseout", function(){
+						  .on("mouseout", function(){
 								d3.select(this).attr("points", null);
 								tooltip_pk.style("display", "none");
 							})
@@ -297,8 +315,9 @@ window.addEventListener("load", start, false);
 			  // position axes' tooltips
 			  tooltips.each(function (p,i){
 				  d3.select(this)
-			    	.style("top", y[p](d[p])+"px")
-			    	.text(d[p]);
+			    	.style("top", axisYOffset + y[p](d[p]) + "px")
+			    	.text(d[p] > 1 ? numeral(d[p]).format('0[.]00')
+								: numeral(d[p]).format('0.00e+0'));
 			  });
 
 			  var word = d["Word"]; //highlighted word
