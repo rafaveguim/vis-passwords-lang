@@ -215,7 +215,6 @@ God:1,
 goddamn:1,
 goddamned:1,
 "hardcoresex ":1,
-hell:1,
 heshe:1,
 hoar:1,
 hoare:1,
@@ -450,11 +449,24 @@ willies:1,
 willy:1,
 xrated:1,
 xxx:1
-}
+};
+
+// cache of strings like "***" of variable lengths for replacement of bad words
+// badword_replacements[2] = **
+badword_replacement = _.range(0,50).map(function(d){
+  return Array(d+1).join('*');
+});
 
 badwords = _.keys(badwords).sort(function(a,b){return b.length - a.length});
 
 omitBadword = function(w){
-  badwords.forEach(function(badword){w = w.replace(badword, Array(badword.length).join("*"))});
-  return w;
+  var cleanWord = w;
+  badwords.forEach(function(badword){
+    if (badword.length > w.length) return;
+
+    cleanWord = cleanWord.replace(badword, badword[0] + badword_replacement[badword.length-1]);
+    // if (cleanWord != w)
+    //   console.log(w + " --> " + cleanWord);
+  });
+  return cleanWord;
 }
