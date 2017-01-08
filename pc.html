@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,10 +13,9 @@
 <script type="text/javascript" src="mapping.js"></script>
 <script type="text/javascript" src="engine.js"></script>
 
-
 <title>Words in Passwords</title>
 
-<!-- <script type="text/javascript">
+<script type="text/javascript">
     function windowpop(url, width, height) {
         var leftPosition, topPosition;
         //Allow for borders.
@@ -25,14 +25,17 @@
         //Open the window.
         window.open(url, "Window2", "status=no,height=" + height + ",width=" + width + ",resizable=yes,left=" + leftPosition + ",top=" + topPosition + ",screenX=" + leftPosition + ",screenY=" + topPosition + ",toolbar=no,menubar=no,scrollbars=no,location=no,directories=no");
     }
-</script> -->
+</script>
+
 </head>
 
-<body>
-  <div id="header">
-      <h1>Words in Passwords</h1>
-      <h2>An exploration of the words extracted from the 32 million passwords leaked from RockYou. <a href="#" onclick="return windowpop('help.html', 450, 800)">(more...)</a> </h2>
-  </div>
+<body id="body">
+
+    <div id="header">
+        <h1>Words in Passwords</h1>
+        <h2>An exploration of the words extracted from the 32 million passwords leaked from RockYou. <a href="#" onclick="return windowpop('help.html', 450, 800)">(more...)</a> </h2>
+    </div>
+
     <div id="left_panel">
     	<div id="pwd_list">
 
@@ -45,6 +48,7 @@
 	    	</svg> -->
 			<div id="bottom_toolbar">
 		    	<input size="50" type="search" id="searchbox" onkeyup="search()"/>
+		    	<p style="font-size: 10pt; font-family: Helvetica;">by <a href="http://vialab.science.uoit.ca/portfolio/rafael-veras-guimaraes">Rafael Veras</a>, vialab, 2013.</p>
 		    </div>
 		</div>
 

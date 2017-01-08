@@ -28,7 +28,7 @@ window.addEventListener("load", start, false);
 	function start(){
 
 		var w = width("stage_wrapper") - 20; // magic number to reduce usual error in width informed by the browser
-		var h = height("stage_wrapper") - height("bottom_toolbar");
+		var h = height("body") - height("bottom_toolbar") - height("header");
 		x = d3.scale.ordinal().rangePoints([0, w], 0.3);
 
 		var svg = d3.select("#stage_wrapper")
@@ -44,7 +44,7 @@ window.addEventListener("load", start, false);
 		h -= m[0] + m[2];
 		w -= m[1] + m[3]
 
-		d3.csv("word_measures_top.csv", function(cars) {
+		d3.csv("word_measures.csv", function(cars) {
 
 			  // Extract the list of dimensions e sets the domain for the x-axis.
 			  x.domain(dimensions = d3.keys(cars[0]).filter(function(d) {
