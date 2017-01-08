@@ -82,6 +82,18 @@ window.addEventListener("load", start, false);
 						.map(pwdsCsv);
 					});
 
+			d3.select("body")
+				.on("keydown", function(){
+					if (d3.event.keyCode == 27){  // escape key
+						// reset selection
+						isSelected = false;
+						selected.attr("d", null);
+						// updatePwdList(d["Word"], true);
+						tooltip_selected.style("top", null)
+							.text(null);
+					}
+				});
+
 		  // Add the tooltips
 		  tooltips =  d3.select("body")
 				  		.selectAll("div.tooltip_value")
@@ -130,7 +142,7 @@ window.addEventListener("load", start, false);
 						    	tooltip_selected.style("top",tpSelecTop(d))
 						    	  					.text(d["Word"]);
 						    })
-						    .on("mouseout", function(){
+						  .on("mouseout", function(){
 								d3.select(this).attr("points", null);
 								tooltip_pk.style("display", "none");
 							})
