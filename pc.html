@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,23 +11,42 @@
 <script type="text/javascript" src="mapping.js"></script>
 <script type="text/javascript" src="engine.js"></script>
 
-<title>The Parallel Coordinates Example</title>
+<title>Words in Passwords</title>
+
+<script type="text/javascript">
+    function windowpop(url, width, height) {
+        var leftPosition, topPosition;
+        //Allow for borders.
+        leftPosition = (window.screen.width / 2) - ((width / 2) + 10);
+        //Allow for title and status bars.
+        topPosition = (window.screen.height / 2) - ((height / 2) + 50);
+        //Open the window.
+        window.open(url, "Window2", "status=no,height=" + height + ",width=" + width + ",resizable=yes,left=" + leftPosition + ",top=" + topPosition + ",screenX=" + leftPosition + ",screenY=" + topPosition + ",toolbar=no,menubar=no,scrollbars=no,location=no,directories=no");
+    }
+</script>
+
 </head>
 
-<body>
+<body id="body">
+
+    <div id="header">
+        <h1>Words in Passwords</h1>
+        <h2>An exploration of the words extracted from the 32 million passwords leaked from RockYou. <a href="#" onclick="return windowpop('help.html', 450, 800)">(more...)</a> </h2>
+    </div>
 
     <div id="left_panel">
     	<div id="pwd_list">
-    		
+
     	</div>
     </div>
-    
+
 	    <div id="stage_wrapper">
 <!--    	<svg id="stage">
-	    	
+
 	    	</svg> -->
 			<div id="bottom_toolbar">
 		    	<input size="50" type="search" id="searchbox" onkeyup="search()"/>
+		    	<p style="font-size: 10pt; font-family: Helvetica;">by <a href="http://vialab.science.uoit.ca/portfolio/rafael-veras-guimaraes">Rafael Veras</a>, vialab, 2013.</p>
 		    </div>
 		</div>
 
@@ -38,11 +58,11 @@
 
 
 	<!-- Defining drop shadow filters. Worked fine on Firefox, but not on Chrome. If you want to try them,
-		use either one or other. --> 
+		use either one or other. -->
     <!--	<filter id="dropshadow" height="130%">
 				  <feGaussianBlur in="SourceAlpha" stdDeviation="3" /> stdDeviation is how much to blur
 				    <feOffset dx="2" dy="2" result="offsetblur" /> how much to offset
-				    <feMerge> 
+				    <feMerge>
 				      <feMergeNode /> this contains the offset blurred image
 				      <feMergeNode in="SourceGraphic" /> this contains the element that the filter is applied to
 				   </feMerge>

@@ -78,7 +78,21 @@ html, body {
     height: 100%;
     width: 85%;
 }
-
+a {color:gray}
+#header{
+    padding-left: 10px;
+    font-family: Helvetica;
+}
+h1{
+    margin-bottom: 10px;
+    margin-top: 0;
+    padding: 20px 0 5px 0;;
+}
+h2{
+    font-size: 14pt;
+    color: gray;
+    margin-top: 0;
+}
 #leftPanel ol li {
     font-size: 12pt;
 }
@@ -129,6 +143,6 @@ html, body {
  	-webkit-appearance: none;
  	padding-left: 25px;
   	background: url(images/search_icon.gif) no-repeat 2px;
-  	border: solid 1px rgb(200,200,200); 
+  	border: solid 1px rgb(200,200,200);
 	/*border-style: inherit;*/
 }
