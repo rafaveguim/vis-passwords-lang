@@ -1,0 +1,68 @@
+<html>
+
+<head>
+<style>
+
+body {
+    font-family: Helvetica;
+    text-align: center;
+    font-size: 10.5pt
+}
+
+#container {
+    margin: 0 auto;
+    width: 400px;
+    text-align: justify;
+}
+
+p {
+
+}
+
+h1, h2 {
+    color: rgb(53, 49, 49);
+}
+</style>
+
+</head>
+
+<body>
+
+<div id="container">
+
+<h1>Help</h1>
+
+<p>The visualization exposes the words extracted from over 32 million passwords contained in the RockYou leak. It focuses on the 500 words with the most unexpected frequencies compared to standard English, as represented by the British National Corpus (BNC). In other words, this visualization shows how &ldquo;password English&rdquo; differs from &ldquo;regular English&rdquo;.</p>
+
+<h2>Representation</h2>
+
+<p> Each word is represented by a line crossing several vertical axes. Each axis represents a statistical measure for the word. The vertical position where a line intercepts a certain axis is determined by the measured value for the word. For example, a line crossing an axis at the bottom where the values increase in top-down order, indicates that the word's value is high.</p>
+
+<p>Blue words (lines) are more frequent than expected in passwords, while brown words are less frequent than expected, when taking as reference their frequency in the British National Corpus.</p>
+
+<p>
+Once a line is clicked, the 100 most frequent passwords containing the corresponding word are shown on the left.
+</p>
+
+<h2>Axes</h2>
+
+<dl>
+
+<dt>G2</dt>
+<dd>Measures the extent to which the frequency of a word in passwords differs from its frequency in standard English. Positive values indicate prevalence in passwords, while negative values indicate the contrary.</dd>
+
+<dt>G2 Ranking (Difference Ranking)</dt>
+<dd>Ranking of the most unexpected word frequencies, ignoring the signal of the deviation, i.e., whether it is more or less frequent than expected.</dd>
+
+<dt>Relative Frequency - BNC</dt>
+<dd>The relative frequency of the word in the British National Corpus, which estimates its use in standard English.</dd>
+
+<dt>Relative Frequency - Passwords</dt>
+<dd>The relative frequency of the word in the RockYou passwords.</dd>
+
+</dl>
+
+</div>
+
+</body>
+</html>
